@@ -1,0 +1,143 @@
+"","continent","country","life_exp"
+"1","Africa","Algeria",72.301
+"2","Africa","Angola",42.731
+"3","Africa","Benin",56.728
+"4","Africa","Botswana",63.622
+"5","Africa","Burkina Faso",52.295
+"6","Africa","Burundi",49.58
+"7","Africa","Cameroon",54.985
+"8","Africa","Central African Republic",50.485
+"9","Africa","Chad",51.724
+"10","Africa","Comoros",65.152
+"11","Africa","Congo, Dem. Rep.",47.804
+"12","Africa","Congo, Rep.",57.47
+"13","Africa","Cote d'Ivoire",54.655
+"14","Africa","Djibouti",54.791
+"15","Africa","Egypt",71.338
+"16","Africa","Equatorial Guinea",51.579
+"17","Africa","Eritrea",58.04
+"18","Africa","Ethiopia",52.947
+"19","Africa","Gabon",61.366
+"20","Africa","Gambia",59.448
+"21","Africa","Ghana",60.022
+"22","Africa","Guinea",56.007
+"23","Africa","Guinea-Bissau",46.388
+"24","Africa","Kenya",59.339
+"25","Africa","Lesotho",59.685
+"26","Africa","Liberia",46.027
+"27","Africa","Libya",73.952
+"28","Africa","Madagascar",59.443
+"29","Africa","Malawi",49.42
+"30","Africa","Mali",54.467
+"31","Africa","Mauritania",64.164
+"32","Africa","Mauritius",72.801
+"33","Africa","Morocco",71.164
+"34","Africa","Mozambique",46.344
+"35","Africa","Namibia",61.999
+"36","Africa","Niger",56.867
+"37","Africa","Nigeria",47.472
+"38","Africa","Reunion",76.442
+"39","Africa","Rwanda",46.242
+"40","Africa","Sao Tome and Principe",65.528
+"41","Africa","Senegal",63.062
+"42","Africa","Sierra Leone",42.568
+"43","Africa","Somalia",48.159
+"44","Africa","South Africa",61.888
+"45","Africa","Sudan",58.556
+"46","Africa","Swaziland",58.474
+"47","Africa","Tanzania",52.517
+"48","Africa","Togo",58.42
+"49","Africa","Tunisia",73.923
+"50","Africa","Uganda",51.542
+"51","Africa","Zambia",51.821
+"52","Africa","Zimbabwe",62.351
+"53","Americas","Argentina",75.32
+"54","Americas","Bolivia",65.554
+"55","Americas","Brazil",72.39
+"56","Americas","Canada",80.653
+"57","Americas","Chile",78.553
+"58","Americas","Colombia",72.889
+"59","Americas","Costa Rica",78.782
+"60","Americas","Cuba",78.273
+"61","Americas","Dominican Republic",72.235
+"62","Americas","Ecuador",74.994
+"63","Americas","El Salvador",71.878
+"64","Americas","Guatemala",70.259
+"65","Americas","Haiti",60.916
+"66","Americas","Honduras",70.198
+"67","Americas","Jamaica",72.567
+"68","Americas","Mexico",76.195
+"69","Americas","Nicaragua",72.899
+"70","Americas","Panama",75.537
+"71","Americas","Paraguay",71.752
+"72","Americas","Peru",71.421
+"73","Americas","Puerto Rico",78.746
+"74","Americas","Trinidad and Tobago",69.862
+"75","Americas","United States",78.242
+"76","Americas","Uruguay",76.384
+"77","Americas","Venezuela",73.747
+"78","Asia","Afghanistan",43.828
+"79","Asia","Bahrain",75.635
+"80","Asia","Bangladesh",64.062
+"81","Asia","Cambodia",59.723
+"82","Asia","China",72.961
+"83","Asia","Hong Kong, China",82.208
+"84","Asia","India",64.698
+"85","Asia","Indonesia",70.65
+"86","Asia","Iran",70.964
+"87","Asia","Iraq",65.044
+"88","Asia","Israel",80.745
+"89","Asia","Japan",82.603
+"90","Asia","Jordan",72.535
+"91","Asia","Korea, Dem. Rep.",70.647
+"92","Asia","Korea, Rep.",78.623
+"93","Asia","Kuwait",77.588
+"94","Asia","Lebanon",71.993
+"95","Asia","Malaysia",74.241
+"96","Asia","Mongolia",66.803
+"97","Asia","Myanmar",62.069
+"98","Asia","Nepal",63.785
+"99","Asia","Oman",75.64
+"100","Asia","Pakistan",65.483
+"101","Asia","Philippines",71.688
+"102","Asia","Saudi Arabia",72.777
+"103","Asia","Singapore",79.972
+"104","Asia","Sri Lanka",72.396
+"105","Asia","Syria",74.143
+"106","Asia","Taiwan",78.4
+"107","Asia","Thailand",70.616
+"108","Asia","Vietnam",74.249
+"109","Asia","West Bank and Gaza",73.422
+"110","Asia","Yemen, Rep.",62.698
+"111","Europe","Albania",76.423
+"112","Europe","Austria",79.829
+"113","Europe","Belgium",79.441
+"114","Europe","Bosnia and Herzegovina",74.852
+"115","Europe","Bulgaria",73.005
+"116","Europe","Croatia",75.748
+"117","Europe","Czech Republic",76.486
+"118","Europe","Denmark",78.332
+"119","Europe","Finland",79.313
+"120","Europe","France",80.657
+"121","Europe","Germany",79.406
+"122","Europe","Greece",79.483
+"123","Europe","Hungary",73.338
+"124","Europe","Iceland",81.757
+"125","Europe","Ireland",78.885
+"126","Europe","Italy",80.546
+"127","Europe","Montenegro",75.445
+"128","Europe","Netherlands",79.762
+"129","Europe","Norway",80.196
+"130","Europe","Poland",75.563
+"131","Europe","Portugal",78.098
+"132","Europe","Romania",72.476
+"133","Europe","Serbia",74.002
+"134","Europe","Slovak Republic",74.663
+"135","Europe","Slovenia",77.926
+"136","Europe","Spain",80.941
+"137","Europe","Sweden",80.884
+"138","Europe","Switzerland",81.701
+"139","Europe","Turkey",71.777
+"140","Europe","United Kingdom",79.425
+"141","Oceania","Australia",81.235
+"142","Oceania","New Zealand",80.204

@@ -1,0 +1,143 @@
+continent,country,life_exp
+Africa,Algeria,72.301
+Africa,Angola,42.731
+Africa,Benin,56.728
+Africa,Botswana,63.622
+Africa,Burkina Faso,52.295
+Africa,Burundi,49.58
+Africa,Cameroon,54.985
+Africa,Central African Republic,50.485
+Africa,Chad,51.724
+Africa,Comoros,65.152
+Africa,"Congo, Dem. Rep.",47.804
+Africa,"Congo, Rep.",57.47
+Africa,Cote d'Ivoire,54.655
+Africa,Djibouti,54.791
+Africa,Egypt,71.338
+Africa,Equatorial Guinea,51.579
+Africa,Eritrea,58.04
+Africa,Ethiopia,52.947
+Africa,Gabon,61.366
+Africa,Gambia,59.448
+Africa,Ghana,60.022
+Africa,Guinea,56.007
+Africa,Guinea-Bissau,46.388
+Africa,Kenya,59.339
+Africa,Lesotho,59.685
+Africa,Liberia,46.027
+Africa,Libya,73.952
+Africa,Madagascar,59.443
+Africa,Malawi,49.42
+Africa,Mali,54.467
+Africa,Mauritania,64.164
+Africa,Mauritius,72.801
+Africa,Morocco,71.164
+Africa,Mozambique,46.344
+Africa,Namibia,61.999
+Africa,Niger,56.867
+Africa,Nigeria,47.472
+Africa,Reunion,76.442
+Africa,Rwanda,46.242
+Africa,Sao Tome and Principe,65.528
+Africa,Senegal,63.062
+Africa,Sierra Leone,42.568
+Africa,Somalia,48.159
+Africa,South Africa,61.888
+Africa,Sudan,58.556
+Africa,Swaziland,58.474
+Africa,Tanzania,52.517
+Africa,Togo,58.42
+Africa,Tunisia,73.923
+Africa,Uganda,51.542
+Africa,Zambia,51.821
+Africa,Zimbabwe,62.351
+Americas,Argentina,75.32
+Americas,Bolivia,65.554
+Americas,Brazil,72.39
+Americas,Canada,80.653
+Americas,Chile,78.553
+Americas,Colombia,72.889
+Americas,Costa Rica,78.782
+Americas,Cuba,78.273
+Americas,Dominican Republic,72.235
+Americas,Ecuador,74.994
+Americas,El Salvador,71.878
+Americas,Guatemala,70.259
+Americas,Haiti,60.916
+Americas,Honduras,70.198
+Americas,Jamaica,72.567
+Americas,Mexico,76.195
+Americas,Nicaragua,72.899
+Americas,Panama,75.537
+Americas,Paraguay,71.752
+Americas,Peru,71.421
+Americas,Puerto Rico,78.746
+Americas,Trinidad and Tobago,69.862
+Americas,United States,78.242
+Americas,Uruguay,76.384
+Americas,Venezuela,73.747
+Asia,Afghanistan,43.828
+Asia,Bahrain,75.635
+Asia,Bangladesh,64.062
+Asia,Cambodia,59.723
+Asia,China,72.961
+Asia,"Hong Kong, China",82.208
+Asia,India,64.698
+Asia,Indonesia,70.65
+Asia,Iran,70.964
+Asia,Iraq,65.044
+Asia,Israel,80.745
+Asia,Japan,82.603
+Asia,Jordan,72.535
+Asia,"Korea, Dem. Rep.",70.647
+Asia,"Korea, Rep.",78.623
+Asia,Kuwait,77.588
+Asia,Lebanon,71.993
+Asia,Malaysia,74.241
+Asia,Mongolia,66.803
+Asia,Myanmar,62.069
+Asia,Nepal,63.785
+Asia,Oman,75.64
+Asia,Pakistan,65.483
+Asia,Philippines,71.688
+Asia,Saudi Arabia,72.777
+Asia,Singapore,79.972
+Asia,Sri Lanka,72.396
+Asia,Syria,74.143
+Asia,Taiwan,78.4
+Asia,Thailand,70.616
+Asia,Vietnam,74.249
+Asia,West Bank and Gaza,73.422
+Asia,"Yemen, Rep.",62.698
+Europe,Albania,76.423
+Europe,Austria,79.829
+Europe,Belgium,79.441
+Europe,Bosnia and Herzegovina,74.852
+Europe,Bulgaria,73.005
+Europe,Croatia,75.748
+Europe,Czech Republic,76.486
+Europe,Denmark,78.332
+Europe,Finland,79.313
+Europe,France,80.657
+Europe,Germany,79.406
+Europe,Greece,79.483
+Europe,Hungary,73.338
+Europe,Iceland,81.757
+Europe,Ireland,78.885
+Europe,Italy,80.546
+Europe,Montenegro,75.445
+Europe,Netherlands,79.762
+Europe,Norway,80.196
+Europe,Poland,75.563
+Europe,Portugal,78.098
+Europe,Romania,72.476
+Europe,Serbia,74.002
+Europe,Slovak Republic,74.663
+Europe,Slovenia,77.926
+Europe,Spain,80.941
+Europe,Sweden,80.884
+Europe,Switzerland,81.701
+Europe,Turkey,71.777
+Europe,United Kingdom,79.425
+Oceania,Australia,81.235
+Oceania,New Zealand,80.204
