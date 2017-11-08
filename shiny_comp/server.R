@@ -6,16 +6,35 @@ server <- function(input, output, session) {
 	
 	
 	
+	Mutated_crit <- reactive({
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			Mutate_VarCollapse_criteria(data = Exposed, collapsing_vars = input$AnalCrit)
+		}
+	})
 	
-
-
+	Mutated <- reactive({
+		if(is.null(Mutated_crit())) {
+			return(NULL)
+		} else if(length(input$AnalCrit) < 3) {
+			Mutate_VarCollapse_facet(data = Mutated_crit(),
+															 collapsing_vars = crit_vars[!(crit_vars %in% input$AnalCrit)])
+		} else {
+			mutate(Mutated_crit(),
+						 facet = str_c(Material, Coating,
+						 							sep = "_"))
+		}
+	})
 	
-	Mutated <- reactive({if (is.null(input$AnalCrit)) {
-		return (NULL)
-	} else {
-		Mutate_Vars(Exposed, input$AnalCrit)
-	}
-		})
+	# Mutated <- reactive({if (is.null(input$AnalCrit)) {
+	# 	return (NULL)
+	# } else {
+	# 	Mutate_Vars(data = Exposed, vars = input$AnalCrit, crit_vars = crit_vars)
+	# }
+	# 	})
+	
+	
 	colour_scheme <- reactive({
 		if (is.null(input$AnalCrit)){
 			return (NULL)
@@ -37,11 +56,13 @@ server <- function(input, output, session) {
 	
 	# First Scatter Plot:
 	
+	
 	plot_sizeTab1 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab1),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab1),
 												 as.numeric(input$PlotSizeTab1),
-												 2 * as.numeric(input$PlotSizeTab1))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab1),
+												 as.numeric(input$PlotSizeTab1))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_rough_jitter <- reactive({
@@ -72,7 +93,7 @@ server <- function(input, output, session) {
 			return(NULL)
 		} else{
 			plotOutput("rough_jitter1",
-								 height = plot_sizeTab1()[[1]])
+								 height = plot_sizeTab1()[[4]])
 		}
 	})
 	
@@ -82,42 +103,121 @@ server <- function(input, output, session) {
 	})
 	
 	# Scatter Plot2:
+	
+	
 	output$rough_jitter2_UIO <- renderUI({
+		# plotOutput("rough_jitter2",
+		# 					 height = plot_sizeTab1()[[length(input$AnalCrit)]])
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) > 1) {
+		} else {
 			plotOutput("rough_jitter2",
 								 height = plot_sizeTab1()[[length(input$AnalCrit)]])
 		}
 	})
-	
-	
+
+
 	output$rough_jitter2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
+		if (is.null(input$AnalCrit)){
+			return(NULL)
+		} else {
 			plot_rough_jitter() +
-				facet_wrap(~ plot_rough_jitter()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-			} else if (length(input$AnalCrit) == 3) {
-				plot_rough_jitter() +
-					facet_wrap(~ plot_rough_jitter()$data$crit_3)
-				}
-	})
+				facet_wrap(~ facet)
+			}
+		})
+	
+	# # Scatter Plot, Varying Time:
+	# 
+	# plot2_sizeTab1 <- reactive({
+	# 	str_c(as.character(c(2 * as.numeric(input$Plot2SizeTab1),
+	# 											 as.numeric(input$Plot2SizeTab1),
+	# 											 2 * as.numeric(input$Plot2SizeTab1),
+	# 											 as.numeric(input$Plot2SizeTab1))),
+	# 				c("px", "px", "px", "px"), sep = "")
+	# })
+	# 
+	# filtered <- reactive({
+	# 	if (is.null(Mutated())){
+	# 		return(NULL)
+	# 	}
+	# 	Mutated() %>%
+	# 		filter(Time2 == input$TimeRJ)
+	# })
+	# 
+	# plot_rough_JT <- reactive({
+	# 	if(is.null(filtered())){
+	# 		return(NULL)
+	# 	} else {
+	# 		filtered() %>%
+	# 			filter(!is.na(Roughness)) %>%
+	# 			mutate(criteria = fct_drop(criteria)
+	# 						 # criteria = fct_reorder(criteria, Roughness,
+	# 						 # 												 fun = median)
+	# 			) %>%
+	# 			ggplot(aes(x = criteria, y = Roughness,
+	# 								 colour = criteria)) + 
+	# 			scale_x_discrete("criteria") +
+	# 			scale_y_continuous("Roughness",
+	# 												 limits = c(min(Mutated()$Roughness,
+	# 												 							 na.rm = TRUE),max(Mutated()$Roughness,
+	# 												 							 									na.rm = TRUE))) +
+	# 			geom_jitter(position = position_jitter(width = 0.1, height = 0),
+	# 									alpha = 1/3, size = 3) + 
+	# 			scale_colour_manual(values = Colour()) +
+	# 			theme(plot.subtitle = element_text(vjust = 1),
+	# 						plot.caption = element_text(vjust = 1),
+	# 						panel.grid.major = element_line(colour = "gray5",
+	# 																						linetype = "longdash"),
+	# 						panel.grid.minor = element_line(colour = "gray5",
+	# 																						linetype = "dotdash"),
+	# 						panel.background = element_rect(fill = "gray100"),
+	# 						axis.text = element_text(colour = "gray5"))
+	# 	}
+	# 	
+	# })
+	# 
+	# # Roughness, Time Varying Scatter Plot1:
+	# 
+	# output$rough_JT1_UIO <- renderUI({
+	# 	if(is.null(input$AnalCrit)){
+	# 		return(NULL)
+	# 	} else {
+	# 		plotOutput("rough_JT1",
+	# 							 height = plot2_sizeTab1()[[4]])
+	# 	}
+	# })
+	# output$rough_JT1 <- renderPlot({
+	# 	plot_rough_JT()
+	# })
+	# 
+	# 
+	# # Roughness, Time Varying Scatter Plot2:
+	# output$rough_JT2_UIO <- renderUI({
+	# 	if (is.null(input$AnalCrit)) {
+	# 		return(NULL)
+	# 	} else {
+	# 		plotOutput("rough_JT2",
+	# 							 height = plot2_sizeTab1()[[length(input$AnalCrit)]])
+	# 	}
+	# })
+	# 
+	# output$rough_JT2 <- renderPlot({
+	# 	if(is.null(input$AnalCrit)) {
+	# 		return(NULL)
+	# 	} else {
+	# 		plot_rough_JT() + facet_wrap(~ facet)
+	# 	}
+	# 	
+	# })
 	
 	# Box Plot1:
-
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab2", selected = input$AnalCrit)
-	})
-	
-	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab2)
-	})
 	
 	plot_sizeTab2 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab2),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab2),
 												 as.numeric(input$PlotSizeTab2),
-												 2 * as.numeric(input$PlotSizeTab2))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab2),
+												 as.numeric(input$PlotSizeTab2))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_rough_box <- reactive({
@@ -145,11 +245,11 @@ server <- function(input, output, session) {
 	output$rough_box1_UIO <- renderUI({
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) < 3) {
-			plotOutput("rough_box1", height = plot_sizeTab2()[[1]])
+		} else {
+			plotOutput("rough_box1", height = plot_sizeTab2()[[4]])
 			}
 	})
-	
+	# if (length(input$AnalCrit) < 3)
 
 	
 	output$rough_box1 <- renderPlot({
@@ -167,51 +267,111 @@ server <- function(input, output, session) {
 	output$rough_box2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) > 1){
-			plotOutput("rough_box2", height = plot_sizeTab2()[[length(input$AnalCrit)]])
+		} else {
+			plotOutput("rough_box2", 
+								 height = plot_sizeTab2()[[length(input$AnalCrit)]])
 		}
-		# if (length(input$AnalCrit) == 1) {
-		# 	return(NULL)
-		# } else if (length(input$AnalCrit) == 2) {
-		# 	plotOutput("rough_box2", height = "400px")
-		# } else if (length(input$AnalCrit) == 3) {
-		# 	plotOutput("rough_box2", height = "800px")
-		# }
 	})
 	
 	output$rough_box2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
+		if (is.null(input$AnalCrit)){
+			return(NULL)
+		} else {
 			plot_rough_box() +
-				facet_wrap(~ plot_rough_box()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
-			plot_rough_box() + 
-				facet_wrap(~ plot_rough_box()$data$crit_3)
+				facet_wrap( ~ facet)
 		}
-		# if (is.null(input$AnalCrit)) {
-		# 	return (NULL)
-		# } else if (length(input$AnalCrit) == 2) {
-		# 	plot_rough_box() + 
-		# 		facet_wrap(~ plot_rough_box()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		# } else if (length(input$AnalCrit) == 3) {
-		# 	plot_rough_box() + 
-		# 		facet_wrap(~ plot_rough_box()$data$crit_3)
-		# }
 	})
+	
+	# # Box Plot, Varying Time:
+	# 
+	# plot2_sizeTab2 <- reactive({
+	# 	str_c(as.character(c(2 * as.numeric(input$Plot2SizeTab2),
+	# 											 as.numeric(input$Plot2SizeTab2),
+	# 											 2 * as.numeric(input$Plot2SizeTab2),
+	# 											 as.numeric(input$Plot2SizeTab2))),
+	# 				c("px", "px", "px", "px"), sep = "")
+	# })
+	# 
+	# filtered_BT <- reactive({
+	# 	if (is.null(Mutated())){
+	# 		return(NULL)
+	# 	}
+	# 	Mutated() %>%
+	# 		filter(Time2 == input$TimeRB)
+	# })
+	# 
+	# plot_rough_BT <- reactive({
+	# 	if(is.null(filtered_BT())){
+	# 		return(NULL)
+	# 	} else {
+	# 		filtered_BT() %>%
+	# 			filter(!is.na(Roughness)) %>%
+	# 			mutate(criteria = fct_drop(criteria)
+	# 						 # criteria = fct_reorder(criteria, Roughness,
+	# 						 # 												 fun = median)
+	# 			) %>%
+	# 			ggplot(aes(x = criteria, y = Roughness,
+	# 								 colour = criteria)) +
+	# 			scale_x_discrete("criteria") +
+	# 			scale_y_continuous("Roughness",
+	# 												 limits = c(min(Mutated()$Roughness,
+	# 												 							 na.rm = TRUE),
+	# 												 					 max(Mutated()$Roughness,
+	# 												 							 									na.rm = TRUE))) +
+	# 			geom_boxplot() +
+	# 			scale_colour_manual(values = Colour()) +
+	# 			theme(plot.subtitle = element_text(vjust = 1),
+	# 						plot.caption = element_text(vjust = 1),
+	# 						panel.grid.major = element_line(colour = "gray5",
+	# 																						linetype = "longdash"),
+	# 						panel.grid.minor = element_line(colour = "gray5",
+	# 																						linetype = "dotdash"),
+	# 						panel.background = element_rect(fill = "gray100"),
+	# 						axis.text = element_text(colour = "gray5"))
+	# 	}
+	# 	
+	# })
+	
+	# # Roughness, Time Varying Box Plot1:
+	# 
+	# output$rough_BT1_UIO <- renderUI({
+	# 	if(is.null(input$AnalCrit)){
+	# 		return(NULL)
+	# 	} else {
+	# 		plotOutput("rough_BT1",
+	# 							 height = plot2_sizeTab2()[[4]])
+	# 	}
+	# })
+	# output$rough_BT1 <- renderPlot({
+	# 	plot_rough_BT()
+	# })
+	# 
+	# # Roughness, Time Varying Box Plot2:
+	# output$rough_BT2_UIO <- renderUI({
+	# 	if (is.null(input$AnalCrit)) {
+	# 		return(NULL)
+	# 	} else {
+	# 		plotOutput("rough_BT2",
+	# 							 height = plot2_sizeTab2()[[length(input$AnalCrit)]])
+	# 	}
+	# })
+	# 
+	# output$rough_BT2 <- renderPlot({
+	# 	if (is.null(input$AnalCrit)) {
+	# 		return(NULL)
+	# 	} else {
+	# 		plot_rough_BT() + facet_wrap(~ facet)
+	# 		}
+	# })
+	# 
 	# Average Plot1:
 	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab3", selected = input$AnalCrit)
-	})
-	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab3)
-	})
-	
 	plot_sizeTab3 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab3),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab3),
 												 as.numeric(input$PlotSizeTab3),
-												 2 * as.numeric(input$PlotSizeTab3))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab3),
+												 as.numeric(input$PlotSizeTab3))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_rough_line <- reactive({
@@ -240,7 +400,7 @@ server <- function(input, output, session) {
 	
 	output$rough_line1_UIO <- renderUI({
 		plotOutput("rough_line1",
-							 height = plot_sizeTab3()[[1]])
+							 height = plot_sizeTab3()[[4]])
 	})
 	
 	output$rough_line1 <- renderPlot({
@@ -249,55 +409,33 @@ server <- function(input, output, session) {
 	
 	# Average Plot2:
 	output$rough_line2_UIO <- renderUI({
-		if (length(input$AnalCrit) > 1) {
-			plotOutput("rough_line2", 
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("rough_line2",
 								 height = plot_sizeTab3()[[length(input$AnalCrit)]])
 		}
-		# if (length(input$AnalCrit) == 1) {
-		# 	return(NULL)
-		# } else if (length(input$AnalCrit) == 2) {
-		# 	plotOutput("rough_line2", height = "400px")
-		# } else if (length(input$AnalCrit) == 3) {
-		# 	plotOutput("rough_line2", height = "800px")
-		# }
 	})
 	
+	
 	output$rough_line2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
-			plot_rough_line() + 
-				facet_wrap(~ plot_rough_line()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
+		if (is.null(plot_rough_line())) {
+			return(NULL)
+		} else {
 			plot_rough_line() +
-				facet_wrap(~ plot_rough_line()$data$crit_3)
+				facet_wrap(~ facet)
 		}
-		# if (length(input$AnalCrit) == 1) {
-		# 	return(NULL)
-		# }
-		# else if (length(input$AnalCrit) == 2) {
-		# 	plot_rough_line() + 
-		# 		facet_wrap(~ plot_rough_line()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		# }
-		# else if (length(input$AnalCrit) == 3) {
-		# 	plot_rough_line() +
-		# 		facet_wrap(~ plot_rough_line()$data$crit_3)
-		# }
 	})
 	
 	# Hardness, Jitters:
 	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab4", selected = input$AnalCrit)
-	})
-	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab4)
-	})
 	
 	plot_sizeTab4 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab4),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab4),
 												 as.numeric(input$PlotSizeTab4),
-												 2 * as.numeric(input$PlotSizeTab4))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab4),
+												 as.numeric(input$PlotSizeTab4))),
+					c("px", "px", "px","px"), sep = "")
 	})
 	
 	plot_hard_jitter <- reactive({
@@ -327,7 +465,7 @@ server <- function(input, output, session) {
 	# Jitter1:
 	output$hard_jitter1_UIO <- renderUI({
 		plotOutput("hard_jitter1",
-							 height = plot_sizeTab4()[[1]])
+							 height = plot_sizeTab4()[[4]])
 	})
 	
 	output$hard_jitter1 <- renderPlot({
@@ -336,37 +474,30 @@ server <- function(input, output, session) {
 	
 	# Jitter2:
 	output$hard_jitter2_UIO <- renderUI({
-		if (length(input$AnalCrit) > 1) {
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
 			plotOutput("hard_jitter2",
 								 height = plot_sizeTab4()[[length(input$AnalCrit)]])
 		}
 	})
 	
 	output$hard_jitter2 <- renderPlot({
-		if(length(input$AnalCrit) == 2){
-			plot_hard_jitter() + 
-				facet_wrap(~ plot_hard_jitter()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
-			plot_hard_jitter() + 
-				facet_wrap(~ plot_hard_jitter()$data$crit_3)
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plot_hard_jitter() + facet_wrap( ~ facet)
 		}
 	})
 	
 	# Hardness, Boxplots:
 	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab5", selected = input$AnalCrit)
-	})
-	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab5)
-	})
-	
 	plot_sizeTab5 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab5),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab5),
 												 as.numeric(input$PlotSizeTab5),
-												 2 * as.numeric(input$PlotSizeTab5))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab5),
+												 as.numeric(input$PlotSizeTab5))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_hard_box <- reactive({
@@ -396,9 +527,9 @@ server <- function(input, output, session) {
 	output$hard_box1_UIO <- renderUI({
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) < 3) {
-			plotOutput("hard_box1", 
-								 height = plot_sizeTab5()[[1]])
+		} else {
+			plotOutput("hard_box1",
+								 height = plot_sizeTab5()[[4]])
 		}
 	})
 	
@@ -408,28 +539,30 @@ server <- function(input, output, session) {
 	
 	# Boxplot2:
 	output$hard_box2_UIO <- renderUI({
-		if (length(input$AnalCrit) > 1) {
+		if(is.null(input$AnalCrit)){
+			return(NULL)
+		} else {
 			plotOutput("hard_box2",
 								 height = plot_sizeTab5()[[length(input$AnalCrit)]])
 		}
 	})
 	
 	output$hard_box2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
+		if(is.null(input$AnalCrit)){
+			return(NULL)
+		} else {
 			plot_hard_box() +
-				facet_wrap(~ plot_hard_box()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-			} else if (length(input$AnalCrit) == 3) {
-				plot_hard_box() +
-					facet_wrap(~ plot_hard_box()$data$crit_3)
-				}
+				facet_wrap(~ facet)
+		}
 		})
 		
 	# Hradness Average Trennds:
 	plot_sizeTab6 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab6),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab6),
 												 as.numeric(input$PlotSizeTab6),
-												 2 * as.numeric(input$PlotSizeTab6))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab6),
+												 as.numeric(input$PlotSizeTab6))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_hard_line <- reactive({
@@ -457,17 +590,14 @@ server <- function(input, output, session) {
 	})
 	# Hardness, Average Plot1:
 	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab6", selected = input$AnalCrit)
-	})
-	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab6)
-	})
 	
 	output$hard_line1_UIO <- renderUI({
-		plotOutput("hard_line1",
-							 height = plot_sizeTab6()[[1]])
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("hard_line1",
+								 height = plot_sizeTab6()[[4]])
+		}
 	})
 	
 	output$hard_line1 <- renderPlot({
@@ -475,38 +605,33 @@ server <- function(input, output, session) {
 	})
 	
 	output$hard_line2_UIO <- renderUI({
-		if (length(input$AnalCrit) > 1) {
-			plotOutput("hard_line2", 
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("hard_line2",
 								 height = plot_sizeTab6()[[length(input$AnalCrit)]])
 		}
 	})
 	
 	output$hard_line2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
 			plot_hard_line() + 
-				facet_wrap(~ plot_hard_line()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
-			plot_hard_line() +
-				facet_wrap(~ plot_hard_line()$data$crit_3)
+				facet_wrap(~ facet)
 		}
 	})
 	
 	# Flexural Stress:
 	# Flexural Stress, Scatter Plots:
 	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab7", selected = input$AnalCrit)
-	})
-	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab7)
-	})
 	
 	plot_sizeTab7 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab7),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab7),
 												 as.numeric(input$PlotSizeTab7),
-												 2 * as.numeric(input$PlotSizeTab7))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab7),
+												 as.numeric(input$PlotSizeTab7))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_flexural_jitter <- reactive({
@@ -539,7 +664,7 @@ server <- function(input, output, session) {
 			return(NULL)
 		} else{
 			plotOutput("flexural_jitter1",
-								 height = plot_sizeTab7()[[1]])
+								 height = plot_sizeTab7()[[4]])
 		}
 	})
 	
@@ -552,7 +677,7 @@ server <- function(input, output, session) {
 	output$flexural_jitter2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) > 1) {
+		} else {
 			plotOutput("flexural_jitter2",
 								 height = plot_sizeTab7()[[length(input$AnalCrit)]])
 		}
@@ -560,30 +685,22 @@ server <- function(input, output, session) {
 
 
 	output$flexural_jitter2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
-			plot_flexural_jitter() +
-				facet_wrap(~ plot_flexural_jitter()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
-			plot_flexural_jitter() +
-				facet_wrap(~ plot_flexural_jitter()$data$crit_3)
+		if (is.null(plot_flexural_jitter())) {
+			
+		} else{
+				plot_flexural_jitter() +
+					facet_wrap(~ facet)
 		}
 	})
 	
 	# Flexural, Box Plots:
-
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab8", selected = input$AnalCrit)
-	})
-
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab8)
-	})
 	
 	plot_sizeTab8 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab8),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab8),
 												 as.numeric(input$PlotSizeTab8),
-												 2 * as.numeric(input$PlotSizeTab8))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab8),
+												 as.numeric(input$PlotSizeTab8))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_flexural_box <- reactive({
@@ -614,8 +731,8 @@ server <- function(input, output, session) {
 	output$flexural_box1_UIO <- renderUI({
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) < 3) {
-			plotOutput("flexural_box1", height = plot_sizeTab8()[[1]])
+		} else {
+			plotOutput("flexural_box1", height = plot_sizeTab8()[[4]])
 		}
 	})
 	
@@ -628,38 +745,30 @@ server <- function(input, output, session) {
 	output$flexural_box2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)){
 			return(NULL)
-		} else if (length(input$AnalCrit) > 1){
-			plotOutput("flexural_box2", 
+		} else {
+			plotOutput("flexural_box2",
 								 height = plot_sizeTab8()[[length(input$AnalCrit)]])
 		}
 	})
 	
 	output$flexural_box2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
+		if (is.null(plot_flexural_box())){
+			return(NULL)
+		} else {
 			plot_flexural_box() +
-				facet_wrap(~ plot_flexural_box()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
-			plot_flexural_box() +
-				facet_wrap(~ plot_flexural_box()$data$crit_3)
+				facet_wrap(~ facet)
 		}
 	})
 	
 	# Flexural Strength, Average Trends:
 	# Average Plot1:
 	
-	observe({
-		updateCheckboxGroupInput(session, "AnalCritTab9", selected = input$AnalCrit)
-	})
-
-	observe({
-		updateCheckboxGroupInput(session, "AnalCrit", selected = input$AnalCritTab9)
-	})
-	
 	plot_sizeTab9 <- reactive({
-		str_c(as.character(c(as.numeric(input$PlotSizeTab9),
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab9),
 												 as.numeric(input$PlotSizeTab9),
-												 2 * as.numeric(input$PlotSizeTab9))),
-					c("px", "px", "px"), sep = "")
+												 2 * as.numeric(input$PlotSizeTab9),
+												 as.numeric(input$PlotSizeTab9))),
+					c("px", "px", "px", "px"), sep = "")
 	})
 	
 	plot_flexural_line <- reactive({
@@ -689,7 +798,7 @@ server <- function(input, output, session) {
 	
 	output$flexural_line1_UIO <- renderUI({
 		plotOutput("flexural_line1",
-							 height = plot_sizeTab9()[[1]])
+							 height = plot_sizeTab9()[[4]])
 	})
 
 	output$flexural_line1 <- renderPlot({
@@ -698,19 +807,20 @@ server <- function(input, output, session) {
 
 	# Average Plot2:
 	output$flexural_line2_UIO <- renderUI({
-		if (length(input$AnalCrit) > 1) {
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
 			plotOutput("flexural_line2",
 								 height = plot_sizeTab9()[[length(input$AnalCrit)]])
 		}
 	})
 	
 	output$flexural_line2 <- renderPlot({
-		if (length(input$AnalCrit) == 2) {
+		if (is.null(input$AnalCrit)){
+			return(NULL)
+		} else {
 			plot_flexural_line() +
-				facet_wrap(~ plot_flexural_line()$data[[crit_vars[!(crit_vars %in% input$AnalCrit)]]])
-		} else if (length(input$AnalCrit) == 3) {
-			plot_flexural_line() +
-				facet_wrap(~ plot_flexural_line()$data$crit_3)
+				facet_wrap(~ facet)
 		}
 	})
 	

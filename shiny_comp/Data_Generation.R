@@ -39,6 +39,7 @@ exposed360 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Expo
 																Exposed_list$exposed270,
 																Exposed_list$exposed360)) %>% 
 		mutate(Material = as.factor(Material),
+					 Coating = str_replace(Coating, "PR", "NG"),
 					 Coating = as.factor(Coating),
 					 Cure = as.factor(Cure),
 					 crit_3 = str_c(Material, Coating,
@@ -46,6 +47,14 @@ exposed360 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Expo
 Exposed$Material
 Exposed$Coating
 Exposed$Cure
+
+Time_tibble <- tibble(Time2 = seq(0,5,1), Time = c(0, 30,
+																									 90, 180,
+																									 270, 360))
+
+Exposed <- inner_join(Exposed, Time_tibble)
+Exposed$Time2
+
 saveRDS(Exposed, "Exposed.rds")
 
 (Type <- Exposed %>% 
@@ -59,7 +68,7 @@ names(Type) <- c("material", "coating", "cure")
 															 Material = c("#f00000", "#000000", "#0000ff")))
 
 (colour_Coating <- tibble(coating = unique(Type$coating),
-															Coating = c("#ff6600", "#00cc00", "#000000")))
+															Coating = c("#ff6600", "#00cc00")))
 
 ((colour_Cure <- tibble(cure = unique(Type$cure),
 														Cure = c("#f00000", "#0000ff"))))
@@ -83,8 +92,7 @@ names(Type) <- c("material", "coating", "cure")
 		summarise() %>% 
 		ungroup() %>% 
 		mutate(Coating_Cure = c("#ff6600", "#e6e600",
-														"#009933", "#00e6e6",
-														"#000000", "#663300")))
+														"#009933", "#00e6e6")))
 
 (colour_Material_Coating_Cure <- Type %>%
 		mutate(Material_Coating_Cure = 
