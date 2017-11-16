@@ -54,7 +54,7 @@ server <- function(input, output, session) {
 	
 	
 	
-	# First Scatter Plot:
+	# Roughness, Scatter Plot:
 	
 	
 	plot_sizeTab1 <- reactive({
@@ -93,6 +93,7 @@ server <- function(input, output, session) {
 		
 	})
 	
+	# Roughness, Scatter Plot1:
 	output$rough_jitter1_UIO <- renderUI({
 		if(is.null(input$AnalCrit)){
 			return(NULL)
@@ -107,7 +108,7 @@ server <- function(input, output, session) {
 		plot_rough_jitter()
 	})
 	
-	# Scatter Plot2:
+	# Roughness, Scatter Plot2:
 	
 	
 	output$rough_jitter2_UIO <- renderUI({
@@ -369,7 +370,8 @@ server <- function(input, output, session) {
 	# 		}
 	# })
 	# 
-	# Average Plot1:
+	
+	# Roughness, General Trend:
 	
 	plot_sizeTab3 <- reactive({
 		str_c(as.character(c(2 * as.numeric(input$PlotSizeTab3),
@@ -405,16 +407,21 @@ server <- function(input, output, session) {
 		}
 	})
 	
+	# Roughness, General Trend, Plot1:
 	output$rough_line1_UIO <- renderUI({
-		plotOutput("rough_line1",
-							 height = plot_sizeTab3()[[4]])
+		if (is.null(input$AnalCrit)){
+			return(NULL)
+		} else {
+			plotOutput("rough_line1",
+								 height = plot_sizeTab3()[[4]])
+		}
 	})
 	
 	output$rough_line1 <- renderPlot({
 		plot_rough_line()
 	})
 	
-	# Average Plot2:
+	# Roughness, General Trend, Plot2:
 	output$rough_line2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)) {
 			return(NULL)
@@ -436,15 +443,15 @@ server <- function(input, output, session) {
 	
 	# Gained Roughness:
 	
-	plot2_sizeTab3 <- reactive({
-		str_c(as.character(c(2 * as.numeric(input$Plot2SizeTab3),
-												 as.numeric(input$Plot2SizeTab3),
-												 2 * as.numeric(input$Plot2SizeTab3),
-												 as.numeric(input$Plot2SizeTab3))),
+	plotG_sizeTab3 <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotGSizeTab3),
+												 as.numeric(input$PlotGSizeTab3),
+												 2 * as.numeric(input$PlotGSizeTab3),
+												 as.numeric(input$PlotGSizeTab3))),
 					c("px", "px", "px", "px"), sep = "")
 	})
 	
-	plot2_rough_line <- reactive({
+	plotG_rough_line <- reactive({
 		if (is.null(Mutated())) {
 			return(NULL)
 		} else {
@@ -474,46 +481,46 @@ server <- function(input, output, session) {
 
 	# Gained Roughness, Plot1:
 	
-	output$rough2_line1_UIO <- renderUI({
-		plotOutput("rough2_line1",
-							 height = plot2_sizeTab3()[[4]])
+	output$roughG_line1_UIO <- renderUI({
+		plotOutput("roughG_line1",
+							 height = plotG_sizeTab3()[[4]])
 	})
 	
-	output$rough2_line1 <- renderPlot({
-		plot2_rough_line()
+	output$roughG_line1 <- renderPlot({
+		plotG_rough_line()
 	})
 	
 	# Gained Roughness, Plot2:
 	
-	output$rough2_line2_UIO <- renderUI({
+	output$roughG_line2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)) {
 			return(NULL)
 		} else {
-			plotOutput("rough2_line2",
-								 height = plot2_sizeTab3()[[length(input$AnalCrit)]])
+			plotOutput("roughG_line2",
+								 height = plotG_sizeTab3()[[length(input$AnalCrit)]])
 		}
 	})
 	
-	output$rough2_line2 <- renderPlot({
-		if (is.null(plot2_rough_line())) {
+	output$roughG_line2 <- renderPlot({
+		if (is.null(plotG_rough_line())) {
 			return(NULL)
 		} else {
-			plot2_rough_line() +
+			plotG_rough_line() +
 				facet_wrap(~ facet)
 		}
 	})
 	
-	# Roughness General Trends
+	# Roughness Model Trends
 	
-	plot_sizeTabG <- reactive({
-		str_c(as.character(c(2 * as.numeric(input$PlotSizeTabG),
-												 as.numeric(input$PlotSizeTabG),
-												 2 * as.numeric(input$PlotSizeTabG),
-												 as.numeric(input$PlotSizeTabG))),
+	plot_sizeTabRM <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTabRM),
+												 as.numeric(input$PlotSizeTabRM),
+												 2 * as.numeric(input$PlotSizeTabRM),
+												 as.numeric(input$PlotSizeTabRM))),
 					c("px", "px", "px", "px"), sep = "")
 	})
 	
-	plot_rough_smooth <- reactive({
+	plot_rough_model <- reactive({
 		if (is.null(Mutated())) {
 			return(NULL)
 		} else {
@@ -536,49 +543,49 @@ server <- function(input, output, session) {
 		}
 	})
 	
-	# Smooth Roughness General Trend Plot 1:
+	# Smooth Roughness Model Trend Plot 1:
 	
-	output$rough_smooth1_UIO <- renderUI({
-		plotOutput("rough_smooth1",
-							 height = plot_sizeTabG()[[4]])
+	output$rough_model1_UIO <- renderUI({
+		plotOutput("rough_model1",
+							 height = plot_sizeTabRM()[[4]])
 	})
 	
-	output$rough_smooth1 <- renderPlot({
-		plot_rough_smooth()
+	output$rough_model1 <- renderPlot({
+		plot_rough_model()
 	})
 	
-	# Smooth Roughness General Trend Plot2:
-	output$rough_smooth2_UIO <- renderUI({
+	# Smooth Roughness Model Trend Plot2:
+	output$rough_model2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)) {
 			return(NULL)
 		} else {
-			plotOutput("rough_smooth2",
-								 height = plot_sizeTabG()[[length(input$AnalCrit)]])
+			plotOutput("rough_model2",
+								 height = plot_sizeTabRM()[[length(input$AnalCrit)]])
 		}
 	})
 	
 	
-	output$rough_smooth2 <- renderPlot({
-		if (is.null(plot_rough_line())) {
+	output$rough_model2 <- renderPlot({
+		if (is.null(plot_rough_model())) {
 			return(NULL)
 		} else {
-			plot_rough_smooth() +
+			plot_rough_model() +
 				facet_wrap(~ facet)
 		}
 	})
 	
-	# # Roughness Gained, Genral Trend:
+	# # Roughness Gained, Model Trend:
 	# 
 	# 
-	# plot2_sizeTabG <- reactive({
-	# 	str_c(as.character(c(2 * as.numeric(input$Plot2SizeTabG),
-	# 											 as.numeric(input$Plot2SizeTabG),
-	# 											 2 * as.numeric(input$Plot2SizeTabG),
-	# 											 as.numeric(input$Plot2SizeTabG))),
+	# plotG_sizeTabRM <- reactive({
+	# 	str_c(as.character(c(2 * as.numeric(input$PlotGSizeTabRM),
+	# 											 as.numeric(input$PlotGSizeTabRM),
+	# 											 2 * as.numeric(input$PlotGSizeTabRM),
+	# 											 as.numeric(input$PlotGSizeTabRM))),
 	# 				c("px", "px", "px", "px"), sep = "")
 	# })
 	# 
-	# plot2_rough_smooth <- reactive({
+	# plotG_rough_model <- reactive({
 	# 	if (is.null(Mutated())) {
 	# 		return(NULL)
 	# 	} else {
@@ -586,7 +593,7 @@ server <- function(input, output, session) {
 	# 			filter(!is.na(Roughness)) %>%
 	# 			ggplot(aes(x = Time, y = GainedR_mean,
 	# 								 colour = criteria)) +
-	# 			scale_x_continuous ("Time", 
+	# 			scale_x_continuous ("Time",
 	# 													breaks = c(30, 90, 180, 270, 360)) +
 	# 			scale_y_continuous("General Gained Roughness") +
 	# 			geom_smooth(lwd = 1, se = FALSE) +
@@ -602,33 +609,33 @@ server <- function(input, output, session) {
 	# 	}
 	# })
 	# 
-	# # Roughness Gained, Smooth Plot1
+	# # Roughness Gained, Model Plot1
 	# 
-	# output$rough2_smooth1_UIO <- renderUI({
-	# 	plotOutput("rough2_smooth1",
-	# 						 height = plot2_sizeTabG()[[4]])
+	# output$roughG_model1_UIO <- renderUI({
+	# 	plotOutput("roughG_model1",
+	# 						 height = plotG_sizeTabRM()[[4]])
 	# })
 	# 
-	# output$rough2_smooth1 <- renderPlot({
-	# 	plot2_rough_smooth()
+	# output$roughG_model1 <- renderPlot({
+	# 	plotG_rough_model()
 	# })
 	# 
-	# # Roughness Gained, Smooth Plot2
+	# # Roughness Gained, Model Plot2
 	# 
-	# output$rough2_smooth2_UIO <- renderUI({
+	# output$roughG_model2_UIO <- renderUI({
 	# 	if (is.null(input$AnalCrit)) {
 	# 		return(NULL)
 	# 	} else {
-	# 		plotOutput("rough2_smooth2",
-	# 							 height = plot2_sizeTabG()[[length(input$AnalCrit)]])
+	# 		plotOutput("roughG_model2",
+	# 							 height = plotG_sizeTabRM()[[length(input$AnalCrit)]])
 	# 	}
 	# })
 	# 
-	# output$rough2_smooth2 <- renderPlot({
-	# 	if (is.null(plot2_rough_smooth())) {
+	# output$roughG_model2 <- renderPlot({
+	# 	if (is.null(plotG_rough_model())) {
 	# 		return(NULL)
 	# 	} else {
-	# 		plot2_rough_smooth() +
+	# 		plotG_rough_model() +
 	# 			facet_wrap(~ facet)
 	# 	}
 	# })
@@ -836,15 +843,15 @@ server <- function(input, output, session) {
 	})
 	# Hardness Trends, Gained Hardness:
 	
-	plot2_sizeTab5 <- reactive({
-		str_c(as.character(c(2 * as.numeric(input$Plot2SizeTab5),
-												 as.numeric(input$Plot2SizeTab5),
-												 2 * as.numeric(input$Plot2SizeTab5),
-												 as.numeric(input$Plot2SizeTab5))),
+	plotG_sizeTab6 <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotGSizeTab6),
+												 as.numeric(input$PlotGSizeTab6),
+												 2 * as.numeric(input$PlotGSizeTab6),
+												 as.numeric(input$PlotGSizeTab6))),
 					c("px", "px", "px", "px"), sep = "")
 	})
 	
-	plot2_hard_line <- reactive({
+	plotG_hard_line <- reactive({
 		if (is.null(Mutated())) {
 			return(NULL)
 		} else {
@@ -872,65 +879,127 @@ server <- function(input, output, session) {
 	})
 	
 	
-	# Gained Roughness, Plot1:
+	# Gained Hardness, Plot1:
 
-	output$hard2_line1_UIO <- renderUI({
-		plotOutput("hard2_line1",
-							 height = plot2_sizeTab5()[[4]])
+	output$hardG_line1_UIO <- renderUI({
+		plotOutput("hardG_line1",
+							 height = plotG_sizeTab6()[[4]])
 	})
 	
-	output$hard2_line1 <- renderPlot({
-		plot2_hard_line()
+	output$hardG_line1 <- renderPlot({
+		plotG_hard_line()
 	})
 
-	# Gained Roughness, Plot2:
+	# Gained Hardness, Plot2:
 
-	output$hard2_line2_UIO <- renderUI({
+	output$hardG_line2_UIO <- renderUI({
 		if (is.null(input$AnalCrit)) {
 			return(NULL)
 		} else {
-			plotOutput("hard2_line2",
-								 height = plot2_sizeTab5()[[length(input$AnalCrit)]])
+			plotOutput("hardG_line2",
+								 height = plotG_sizeTab6()[[length(input$AnalCrit)]])
 		}
 	})
 
-	output$hard2_line2 <- renderPlot({
-		if (is.null(plot2_hard_line())) {
+	output$hardG_line2 <- renderPlot({
+		if (is.null(plotG_hard_line())) {
 			return(NULL)
 		} else {
-			plot2_hard_line() +
+			plotG_hard_line() +
 				facet_wrap(~ facet)
 		}
 	})
 	
 	
 	
-	# # Hardness, Trend for the model:
+	# Hardness, Trend for the model:
+	
+	plot_sizeTabHM <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTabHM),
+												 as.numeric(input$PlotSizeTabHM),
+												 2 * as.numeric(input$PlotSizeTabHM),
+												 as.numeric(input$PlotSizeTabHM))),
+					c("px", "px", "px", "px"), sep = "")
+	})
+	
+	plot_hard_model <- reactive({
+		if (is.null(Mutated())) {
+			return(NULL)
+		} else {
+			Mutated() %>%
+				filter(!is.na(Hardness)) %>%
+				ggplot(aes(x = Time,
+									 y = Hardness,
+									 colour = criteria)) +
+				scale_x_continuous("Time", breaks = c(0,90,180,270,360)) +
+				geom_smooth(lwd = 1, se = FALSE) +
+				scale_colour_manual (values = Colour()) +
+				theme(plot.subtitle = element_text(vjust = 1),
+							plot.caption = element_text(vjust = 1),
+							panel.grid.major = element_line(colour = "gray5",
+																							linetype = "longdash"),
+							panel.grid.minor = element_line(colour = "gray5",
+																							linetype = "dotdash"),
+							panel.background = element_rect(fill = "gray100"),
+							axis.text = element_text(colour = "gray5"))
+		}
+	})
+	
+	# Smooth Hardness Model Trend Plot 1:
+	
+	output$hard_model1_UIO <- renderUI({
+		plotOutput("hard_model1",
+							 height = plot_sizeTabHM()[[4]])
+	})
+	
+	output$hard_model1 <- renderPlot({
+		plot_hard_model()
+	})
+	
+	# Smooth Hardness Model Trend Plot2:
+	output$hard_model2_UIO <- renderUI({
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("hard_model2",
+								 height = plot_sizeTabHM()[[length(input$AnalCrit)]])
+		}
+	})
+	
+	
+	output$hard_model2 <- renderPlot({
+		if (is.null(plot_hard_model())) {
+			return(NULL)
+		} else {
+			plot_hard_model() +
+				facet_wrap(~ facet)
+		}
+	})
+	
+	# # Hardness Gained, Model Trend:
 	# 
-	# plot_sizeTab6 <- reactive({
-	# 	str_c(as.character(c(2 * as.numeric(input$PlotSizeTab6),
-	# 											 as.numeric(input$PlotSizeTab6),
-	# 											 2 * as.numeric(input$PlotSizeTab6),
-	# 											 as.numeric(input$PlotSizeTab6))),
+	# 
+	# plotG_sizeTabHM <- reactive({
+	# 	str_c(as.character(c(2 * as.numeric(input$PlotGSizeTabHM),
+	# 											 as.numeric(input$PlotGSizeTabHM),
+	# 											 2 * as.numeric(input$PlotGSizeTabHM),
+	# 											 as.numeric(input$PlotGSizeTabHM))),
 	# 				c("px", "px", "px", "px"), sep = "")
 	# })
 	# 
-	# plot_hard_line <- reactive({
+	# plotG_hard_model <- reactive({
 	# 	if (is.null(Mutated())) {
 	# 		return(NULL)
 	# 	} else {
 	# 		Mutated() %>%
 	# 			filter(!is.na(Hardness)) %>%
-	# 			ggplot(aes(
-	# 				x = Time,
-	# 				y = Hardness,
-	# 				colour = criteria)) +
-	# 			scale_x_discrete("Time") +
+	# 			ggplot(aes(x = Time, y = GainedH_mean,
+	# 								 colour = criteria)) +
+	# 			scale_x_continuous ("Time",
+	# 													breaks = c(30, 90, 180, 270, 360)) +
+	# 			scale_y_continuous("General Gained Hardness") +
+	# 			geom_smooth(lwd = 1, se = FALSE) +
 	# 			scale_colour_manual (values = Colour()) +
-	# 			stat_summary(fun.y = mean, geom = "point", size = 3, alpha = 1/3) +
-	# 			# stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
-	# 			# 						 size = 1) +
-	# 			geom_smooth(lwd = 1, se = FALSE, aes( group = criteria)) +
 	# 			theme(plot.subtitle = element_text(vjust = 1),
 	# 						plot.caption = element_text(vjust = 1),
 	# 						panel.grid.major = element_line(colour = "gray5",
@@ -941,36 +1010,34 @@ server <- function(input, output, session) {
 	# 						axis.text = element_text(colour = "gray5"))
 	# 	}
 	# })
-	# # Hardness, Average Plot1:
 	# 
+	# # Hardness Gained, Model Plot1
 	# 
-	# output$hard_line1_UIO <- renderUI({
+	# output$hardG_model1_UIO <- renderUI({
+	# 	plotOutput("hardG_model1",
+	# 						 height = plotG_sizeTabHM()[[4]])
+	# })
+	# 
+	# output$hardG_model1 <- renderPlot({
+	# 	plotG_hard_model()
+	# })
+	# 
+	# # Hardness Gained, Model Plot2
+	# 
+	# output$hardG_model2_UIO <- renderUI({
 	# 	if (is.null(input$AnalCrit)) {
 	# 		return(NULL)
 	# 	} else {
-	# 		plotOutput("hard_line1",
-	# 							 height = plot_sizeTab6()[[4]])
+	# 		plotOutput("hardG_model2",
+	# 							 height = plotG_sizeTabHM()[[length(input$AnalCrit)]])
 	# 	}
 	# })
 	# 
-	# output$hard_line1 <- renderPlot({
-	# 	plot_hard_line()
-	# })
-	# 
-	# output$hard_line2_UIO <- renderUI({
-	# 	if (is.null(input$AnalCrit)) {
+	# output$hardG_model2 <- renderPlot({
+	# 	if (is.null(plotG_hard_model())) {
 	# 		return(NULL)
 	# 	} else {
-	# 		plotOutput("hard_line2",
-	# 							 height = plot_sizeTab6()[[length(input$AnalCrit)]])
-	# 	}
-	# })
-	# 
-	# output$hard_line2 <- renderPlot({
-	# 	if (is.null(input$AnalCrit)) {
-	# 		return(NULL)
-	# 	} else {
-	# 		plot_hard_line() + 
+	# 		plotG_hard_model() +
 	# 			facet_wrap(~ facet)
 	# 	}
 	# })
@@ -999,6 +1066,10 @@ server <- function(input, output, session) {
 				scale_x_discrete("Time") +
 				geom_jitter( position = position_jitter(width = 0.1, height = 0),
 										 alpha = 1/3, size = 3) + 
+				stat_summary(fun.y = "mean", geom = "line",
+										 size = 1, alpha = 1/2,
+										 linetype="longdash",
+										 aes(group = criteria)) +
 				scale_colour_manual (values = unique(filter(colour, material != "R",
 																										coating != "PR") [[colour_scheme()]])) +
 				theme(plot.subtitle = element_text(vjust = 1),
@@ -1133,9 +1204,11 @@ server <- function(input, output, session) {
 				ggplot(aes(x = as_factor(as.character(Time)), y = Max_Flexural_Stress,
 									 colour = criteria)) +
 				scale_x_discrete("Time") +
-				stat_summary(fun.y = mean, geom = "point", size = 3) +
+				stat_summary(fun.y = mean, geom = "point", size = 3, na.rm = TRUE) +
+				# geom_smooth(aes(group = criteria), se = FALSE, na.rm = TRUE) +
 				stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
 										 size = 1) +
+				
 				scale_colour_manual (values = unique(filter(colour, material != "R",
 																										coating != "PR") [[colour_scheme()]])) +
 				theme(plot.subtitle = element_text(vjust = 1),
