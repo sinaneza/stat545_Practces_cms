@@ -594,7 +594,7 @@ server <- function(input, output, session) {
 	# 			ggplot(aes(x = Time, y = GainedR_mean,
 	# 								 colour = criteria)) +
 	# 			scale_x_continuous ("Time",
-	# 													breaks = c(30, 90, 180, 270, 360)) +
+	# 													breaks = c(0, 30, 90, 180, 270, 360)) +
 	# 			scale_y_continuous("General Gained Roughness") +
 	# 			geom_smooth(lwd = 1, se = FALSE) +
 	# 			scale_colour_manual (values = Colour()) +
@@ -996,7 +996,7 @@ server <- function(input, output, session) {
 	# 			ggplot(aes(x = Time, y = GainedH_mean,
 	# 								 colour = criteria)) +
 	# 			scale_x_continuous ("Time",
-	# 													breaks = c(30, 90, 180, 270, 360)) +
+	# 													breaks = c(0, 30, 90, 180, 270, 360)) +
 	# 			scale_y_continuous("General Gained Hardness") +
 	# 			geom_smooth(lwd = 1, se = FALSE) +
 	# 			scale_colour_manual (values = Colour()) +
@@ -1209,8 +1209,8 @@ server <- function(input, output, session) {
 				stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
 										 size = 1) +
 				
-				scale_colour_manual (values = unique(filter(colour, material != "R",
-																										coating != "PR") [[colour_scheme()]])) +
+				scale_colour_manual (values = 
+														 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
 				theme(plot.subtitle = element_text(vjust = 1),
 							plot.caption = element_text(vjust = 1),
 							panel.grid.major = element_line(colour = "gray5",
@@ -1250,7 +1250,208 @@ server <- function(input, output, session) {
 		}
 	})
 	
+	# Flexural Trends, Gained Strength:
 	
+	plotG_sizeTab9 <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotGSizeTab9),
+												 as.numeric(input$PlotGSizeTab9),
+												 2 * as.numeric(input$PlotGSizeTab9),
+												 as.numeric(input$PlotGSizeTab9))),
+					c("px", "px", "px", "px"), sep = "")
+	})
+	
+	plotG_flexural_line <- reactive({
+		if (is.null(Mutated())) {
+			return(NULL)
+		} else {
+			Mutated() %>%
+				filter(!is.na(Max_Flexural_Stress)) %>%
+				ggplot(aes(x = as_factor(as.character(Time)), y = GainedF_mean,
+									 colour = criteria)) +
+				scale_x_discrete("Time") +
+				scale_y_continuous("Average Gained Flexural Strength") +
+				stat_summary(fun.y = mean, geom = "point", 
+										 size = 3,alpha = 1/3, na.rm = TRUE) +
+				stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
+				size = 1, na.rm = TRUE) +
+				# geom_smooth(aes(group = criteria), se = FALSE) +
+				scale_colour_manual (values = 
+														 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
+				theme(plot.subtitle = element_text(vjust = 1),
+							plot.caption = element_text(vjust = 1),
+							panel.grid.major = element_line(colour = "gray5",
+																							linetype = "longdash"),
+							panel.grid.minor = element_line(colour = "gray5",
+																							linetype = "dotdash"),
+							panel.background = element_rect(fill = "gray100"),
+							axis.text = element_text(colour = "gray5"))
+		}
+	})
+	
+	
+	# Gained Flexural Strength, Plot1:
+	
+	output$flexuralG_line1_UIO <- renderUI({
+		plotOutput("flexuralG_line1",
+							 height = plotG_sizeTab9()[[4]])
+	})
+	
+	output$flexuralG_line1 <- renderPlot({
+		plotG_flexural_line()
+	})
+	
+	# Gained Flexural Strength, Plot2:
+	
+	output$flexuralG_line2_UIO <- renderUI({
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("flexuralG_line2",
+								 height = plotG_sizeTab9()[[length(input$AnalCrit)]])
+		}
+	})
+	
+	output$flexuralG_line2 <- renderPlot({
+		if (is.null(plotG_flexural_line())) {
+			return(NULL)
+		} else {
+			plotG_flexural_line() +
+				facet_wrap(~ facet)
+		}
+	})
+	
+	# Flexural Strength, Trend for the Model
+	plot_sizeTabFM <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotSizeTabFM),
+												 as.numeric(input$PlotSizeTabFM),
+												 2 * as.numeric(input$PlotSizeTabFM),
+												 as.numeric(input$PlotSizeTabFM))),
+					c("px", "px", "px", "px"), sep = "")
+	})
+	
+	plot_flexural_model <- reactive({
+		if (is.null(Mutated())) {
+			return(NULL)
+		} else {
+			Mutated() %>%
+				filter(!is.na(Max_Flexural_Stress)) %>%
+				ggplot(aes(x = Time,
+									 y = Max_Flexural_Stress,
+									 colour = criteria)) +
+				scale_x_continuous("Time", breaks = c(0,90,180,270,360)) +
+				stat_summary(fun.y = mean, geom = "point", size = 3, na.rm = TRUE) +
+				geom_smooth(lwd = 1, se = FALSE) +
+				scale_colour_manual (values = 
+														 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
+				theme(plot.subtitle = element_text(vjust = 1),
+							plot.caption = element_text(vjust = 1),
+							panel.grid.major = element_line(colour = "gray5",
+																							linetype = "longdash"),
+							panel.grid.minor = element_line(colour = "gray5",
+																							linetype = "dotdash"),
+							panel.background = element_rect(fill = "gray100"),
+							axis.text = element_text(colour = "gray5"))
+		}
+	})
+	
+	# Smooth, Flexural Strength Model Trend, Plot 1:
+	
+	output$flexural_model1_UIO <- renderUI({
+		plotOutput("flexural_model1",
+							 height = plot_sizeTabFM()[[4]])
+	})
+	
+	output$flexural_model1 <- renderPlot({
+		plot_flexural_model()
+	})
+	
+	# Smooth, Flexural Model Trend, Plot2:
+	output$flexural_model2_UIO <- renderUI({
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("flexural_model2",
+								 height = plot_sizeTabFM()[[length(input$AnalCrit)]])
+		}
+	})
+	
+	
+	output$flexural_model2 <- renderPlot({
+		if (is.null(plot_flexural_model())) {
+			return(NULL)
+		} else {
+			plot_flexural_model() +
+				facet_wrap(~ facet)
+		}
+	})
+	
+	# Flexural Strength Gained, Model Trend:
+
+
+	plotG_sizeTabFM <- reactive({
+		str_c(as.character(c(2 * as.numeric(input$PlotGSizeTabFM),
+												 as.numeric(input$PlotGSizeTabFM),
+												 2 * as.numeric(input$PlotGSizeTabFM),
+												 as.numeric(input$PlotGSizeTabFM))),
+					c("px", "px", "px", "px"), sep = "")
+	})
+
+	plotG_flexural_model <- reactive({
+		if (is.null(Mutated())) {
+			return(NULL)
+		} else {
+			Mutated() %>%
+				filter(!is.na(Max_Flexural_Stress)) %>%
+				ggplot(aes(x = Time, y = GainedF_mean,
+									 colour = criteria)) +
+				scale_x_continuous ("Time",
+														breaks = c(0, 30, 90, 180, 270, 360)) +
+				scale_y_continuous("Flexural Strength Gained") +
+				geom_smooth(lwd = 1, se = FALSE) +
+				stat_summary(fun.y = mean, geom = "point", size = 3, na.rm = TRUE) +
+	scale_colour_manual (values =
+											 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
+				theme(plot.subtitle = element_text(vjust = 1),
+							plot.caption = element_text(vjust = 1),
+							panel.grid.major = element_line(colour = "gray5",
+																							linetype = "longdash"),
+							panel.grid.minor = element_line(colour = "gray5",
+																							linetype = "dotdash"),
+							panel.background = element_rect(fill = "gray100"),
+							axis.text = element_text(colour = "gray5"))
+		}
+	})
+
+	# Flexural Strength Gained, Model Plot1
+
+	output$flexuralG_model1_UIO <- renderUI({
+		plotOutput("flexuralG_model1",
+							 height = plotG_sizeTabFM()[[4]])
+	})
+
+	output$flexuralG_model1 <- renderPlot({
+		plotG_flexural_model()
+	})
+
+	# Flexural Strength Gained, Model Plot2:
+
+	output$flexuralG_model2_UIO <- renderUI({
+		if (is.null(input$AnalCrit)) {
+			return(NULL)
+		} else {
+			plotOutput("flexuralG_model2",
+								 height = plotG_sizeTabFM()[[length(input$AnalCrit)]])
+		}
+	})
+
+	output$flexuralG_model2 <- renderPlot({
+		if (is.null(plotG_flexural_model())) {
+			return(NULL)
+		} else {
+			plotG_flexural_model() +
+				facet_wrap(~ facet)
+		}
+	})
 	
 	# # unique(filter(colour, material != "R", coating != "PR") [[colour_scheme()]])
 	

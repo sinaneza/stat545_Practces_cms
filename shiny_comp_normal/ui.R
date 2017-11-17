@@ -200,16 +200,16 @@ ui <- fluidPage(
 					 					 uiOutput("flexural_model1_UIO"),
 					 					 br(), br(),
 					 					 uiOutput("flexural_model2_UIO"),
+					 					 br(), br(),
+					 					 h2("Exposed Samples, Flexural Strength Gained:"),
+					 					 br(),
+					 					 selectInput("PlotGSizeTabFM", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("flexuralG_model1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("flexuralG_model2_UIO"),
 					 					 br(), br()
-					 					 # h2("Exposed Samples, Flexural Strength Gained:"),
-					 					 # br(),
-					 					 # selectInput("PlotGSizeTabFM", "Heghit of Plots in Pixels:",
-					 					 # 						choices = seq(100, 1000, 50), selected = 400),
-					 					 # hr(),
-					 					 # uiOutput("flexuralG_model1_UIO"),
-					 					 # br(), br(),
-					 					 # uiOutput("flexuralG_model2_UIO"),
-					 					 # br(), br()
 					 	)
 					 )
 		)
