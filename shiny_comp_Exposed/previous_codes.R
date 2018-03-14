@@ -1,3 +1,320 @@
+# Global:
+rm(list = ls())
+library(shiny)
+library(tidyverse)
+library(stringr)
+library(readxl)
+library(forcats)
+# Defining the required functions:
+
+Mutate_VarCollapse_criteria <- function(data, collapsing_vars, ...){
+	library(tidyverse)
+	library(stringr)
+	library(forcats)
+	data <- mutate(data,
+								 criteria = data[[collapsing_vars[[1]]]],
+								 ...)
+	if (length(collapsing_vars)>1){
+		for (i in 1:(length(collapsing_vars)-1)) {
+			data <- mutate(data,
+										 criteria = str_c(criteria, data[[collapsing_vars[[i+1]]]],
+										 								 sep = "_", ...),
+										 criteria = as.factor(criteria),
+										 ...)
+		}
+	}
+	return(data)
+}
+
+Mutate_VarCollapse_facet <- function(data, collapsing_vars, ...){
+	library(tidyverse)
+	library(stringr)
+	library(forcats)
+	data <- mutate(data,
+								 facet = data[[collapsing_vars[[1]]]],
+								 ...)
+	if (length(collapsing_vars)>1){
+		for (i in 1:(length(collapsing_vars)-1)) {
+			data <- mutate(data,
+										 facet = str_c(facet, data[[collapsing_vars[[i+1]]]],
+										 							sep = "_", ...),
+										 facet = as.factor(facet),
+										 ...)
+		}
+	}
+	return(data)
+}
+
+# Mutate_Vars <- function(data, vars, crit_vars, ...){
+# 	library(tidyverse)
+# 	library(stringr)
+# 	if (length (vars) == 1) {
+# 		return(
+# 			mutate(data, 
+# 						 criteria = data[[vars[[1]]]],
+# 						 facet = str_c(data[[crit_vars[!(crit_vars %in% vars)][[1]]]], 
+# 						 							data[[crit_vars[!(crit_vars %in% vars)][[2]]]],
+# 						 							sep = "_", ...), ...)
+# 		)
+# 	} else if (length(vars) == 2) {
+# 		mutate(data,
+# 					 criteria = str_c)
+# 	} else if (length(vars) == 3) {
+# 		
+# 	}
+# 	# # if (is.null(data$criteria)) {
+# 	# data <- mutate(data, criteria = data[[vars[[1]]]], ...)
+# 	# # }
+# 	# if (length(vars)>1){
+# 	# 	for (i in 1:(length(vars)-1)) {
+# 	# 		data <- mutate(data, 
+# 	# 									 criteria = str_c(criteria, data[[vars[[i+1]]]],
+# 	# 									 								 sep = "_"),
+# 	# 									 facet = data[[crit_vars[!(crit_vars %in% vars)][[1]]]],...)
+# 	# 	}
+# 	# } else if (length(vars) == 1) {
+# 	# 	data <- mutate(data,
+# 	# 								 facet = str_c(data[[crit_vars[!(crit_vars %in% vars)][[1]]]],
+# 	# 								 							data[[crit_vars[!(crit_vars %in% vars)][[2]]]],
+# 	# 								 							sep = "_", ...))
+# 	# 	}
+# 	return(data)
+# }
+
+
+# Reading The Required Data Set and variables
+
+Exposed <- readRDS("Exposed.rds")
+
+colour <- readRDS("colour.rds")
+
+crit_vars <- c("Material", "Coating", "Cure")
+
+
+# App:
+shinyApp(ui = ui, server = server)
+
+# UI:
+ui <- fluidPage(
+	br(),
+	titlePanel("Environmental Effect on Fibre Glass Composites, Exposed Samples, Normalized Data"),
+	fluidRow(
+		br(), br(),
+		column(3,
+					 br(), br(),br(),br(), br(),br(), br(), br(),
+					 wellPanel(
+					 	checkboxGroupInput("AnalCrit", "Analysis Criteria:",
+					 										 choices = c("Material", "Coating", "Cure"),
+					 										 selected ="Material"),br(), br(),
+					 	uiOutput("FacetCrit_UIO")
+					 )
+		),
+		column(9,
+					 tabsetPanel(
+					 	tabPanel("Roughness Scatter Plots",
+					 					 br(),
+					 					 h2("Exposed Samples, Roughness Scatter Plots"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab1", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput ("rough_jitter1_UIO"),
+					 					 br(),br(),
+					 					 uiOutput("rough_jitter2_UIO"),
+					 					 br(), br()
+					 	),
+					 	tabPanel("Roughness Box Plots", 
+					 					 br(),
+					 					 h2("Exposed Samples, Roughness Box Plots:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab2", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("rough_box1_UIO"), br(), br(),
+					 					 uiOutput("rough_box2_UIO"), br(), br()
+					 	),
+					 	tabPanel("Roughness Trends",
+					 					 br(),
+					 					 h2("Exposed Samples, Roughness General Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab3", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("rough_line1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("rough_line2_UIO"),
+					 					 br(),
+					 					 h2("Exposed Samples, Gained Roughness:"),
+					 					 br(),
+					 					 selectInput("PlotGSizeTab3", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("roughG_line1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("roughG_line2_UIO"),
+					 					 br(), br()
+					 	),
+					 	tabPanel("Roughness Model",
+					 					 br(),
+					 					 h2("Exposed Samples, Roughness Model Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTabRM", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("rough_model1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("rough_model2_UIO"),
+					 					 br(), br()
+					 					 # h2("Exposed Samples, Roughness Gained:"),
+					 					 # br(),
+					 					 # selectInput("PlotGSizeTabRM", "Heghit of Plots in Pixels:",
+					 					 # 						choices = seq(100, 1000, 50), selected = 400),
+					 					 # hr(),
+					 					 # uiOutput("roughG_model1_UIO"),
+					 					 # br(), br(),
+					 					 # uiOutput("roughG_model2_UIO"),
+					 					 # br(), br()
+					 	),
+					 	tabPanel("Hardness Scatter Plots",
+					 					 br(),
+					 					 h2("Exposed Samples, Hardness, Scatter Plots:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab4", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput ("hard_jitter1_UIO"),
+					 					 br(),br(),
+					 					 uiOutput("hard_jitter2_UIO"),
+					 					 br(), br()
+					 	),
+					 	tabPanel("Hardness Box Plots",
+					 					 br(),
+					 					 h2("Exposed Samples, Hardness, Box Plots:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab5", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput ("hard_box1_UIO"),
+					 					 br(),br(),
+					 					 uiOutput("hard_box2_UIO"),
+					 					 br(),br()
+					 	),
+					 	tabPanel("Hardness Trends",
+					 					 br(),
+					 					 h2("Exposed Samples, Hardness Average Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab6", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("hard_line1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("hard_line2_UIO"),
+					 					 br(),
+					 					 h2("Exposed Samples, Gained Hardness:"),
+					 					 br(),
+					 					 selectInput("PlotGSizeTab6", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("hardG_line1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("hardG_line2_UIO"),
+					 					 br(), br()
+					 	),
+					 	tabPanel("Hardness Model",
+					 					 br(),
+					 					 h2("Exposed Samples, Hardness Model Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTabHM", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("hard_model1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("hard_model2_UIO"),
+					 					 br(), br()
+					 					 # h2("Exposed Samples, Hardness Gained:"),
+					 					 # br(),
+					 					 # selectInput("PlotGSizeTabHM", "Heghit of Plots in Pixels:",
+					 					 # 						choices = seq(100, 1000, 50), selected = 400),
+					 					 # hr(),
+					 					 # uiOutput("hardG_model1_UIO"),
+					 					 # br(), br(),
+					 					 # uiOutput("hardG_model2_UIO"),
+					 					 # br(), br()
+					 	),
+					 	
+					 	tabPanel("Flexural Scatter Plots",
+					 					 br(),
+					 					 h2("Exposed Samples, Flexural Stress Scatter Plots"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab7", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput ("flexural_jitter1_UIO"),
+					 					 br(),br(),
+					 					 uiOutput("flexural_jitter2_UIO"),
+					 					 br(), br()
+					 	),
+					 	tabPanel("Flexural Box Plots", 
+					 					 br(),
+					 					 h2("Exposed Samples, Flexural Strength Box Plots:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab8", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("flexural_box1_UIO"), 
+					 					 br(), br(),
+					 					 uiOutput("flexural_box2_UIO"), 
+					 					 br(), br()
+					 	),
+					 	tabPanel("Flexural Strength Average Trends",
+					 					 br(),
+					 					 h2("Exposed Samples, Flexural Strength, Average Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTab9", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("flexural_line1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("flexural_line2_UIO"),
+					 					 br(), br(),
+					 					 h2("Exposed Samples, Gained Flexural Strength:"),
+					 					 br(),
+					 					 selectInput("PlotGSizeTab9", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("flexuralG_line1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("flexuralG_line2_UIO"),
+					 					 br(), br()
+					 	),
+					 	tabPanel("Flexural Model",
+					 					 br(),
+					 					 h2("Exposed Samples, Flexural Strength Model Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTabFM", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("flexural_model1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("flexural_model2_UIO"),
+					 					 br(), br(),
+					 					 h2("Exposed Samples, Flexural Strength Gained:"),
+					 					 br(),
+					 					 selectInput("PlotGSizeTabFM", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("flexuralG_model1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("flexuralG_model2_UIO"),
+					 					 br(), br()
+					 	)
+					 )
+		)
+	)
+)
+
+
+# Server:
 
 server <- function(input, output, session) {
 	library(tidyverse)
@@ -14,7 +331,7 @@ server <- function(input, output, session) {
 			checkboxGroupInput("FacetCrit", "Facetting Criteria:",
 												 choices = c("Material", "Coating", "Cure"),
 												 selected = c("Material", "Coating"))
-			}
+		}
 	})
 	
 	Mutated_crit <- reactive({
@@ -24,8 +341,8 @@ server <- function(input, output, session) {
 			Mutate_VarCollapse_criteria(data = Exposed, collapsing_vars = input$AnalCrit)
 		}
 	})
-
-
+	
+	
 	# Mutated <- reactive({
 	# 	if(is.null(Mutated_crit())) {
 	# 		return(NULL)
@@ -96,7 +413,7 @@ server <- function(input, output, session) {
 									 y = Roughness, colour = criteria)) +
 				scale_x_discrete("Time") +
 				geom_jitter(position = position_jitter(width = 0.1, height = 0),
-										 alpha = 1/3, size = 3) +
+										alpha = 1/3, size = 3) +
 				stat_summary(fun.y = "mean", geom = "line",
 										 size = 1, alpha = 1/2,
 										 linetype="longdash",
@@ -123,15 +440,15 @@ server <- function(input, output, session) {
 								 height = plot_sizeTab1()[[4]])
 		}
 	})
-
-
+	
+	
 	output$rough_jitter1 <- renderPlot({
 		plot_rough_jitter()
 	})
-
+	
 	# Roughness, Scatter Plot2:
-
-
+	
+	
 	output$rough_jitter2_UIO <- renderUI({
 		if (is.null(input$FacetCrit) | is.null(input$AnalCrit)){
 			return(NULL)
@@ -140,7 +457,7 @@ server <- function(input, output, session) {
 								 height = plot_sizeTab1()[[length(input$FacetCrit)]])
 		}
 	})
-
+	
 	output$rough_jitter2 <- renderPlot({
 		if (is.null(input$FacetCrit) | is.null(input$AnalCrit)){
 			return(NULL)
@@ -405,7 +722,7 @@ server <- function(input, output, session) {
 				stat_summary(fun.y = mean, geom = "point", size = 3, alpha = 1/3) +
 				geom_smooth(aes(group = criteria), se = FALSE) +
 				# stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
-										 # size = 1) +
+				# size = 1) +
 				scale_colour_manual (values = Colour()) +
 				theme(plot.subtitle = element_text(vjust = 1),
 							plot.caption = element_text(vjust = 1),
@@ -474,7 +791,7 @@ server <- function(input, output, session) {
 				scale_y_continuous("Average Gained Roughness") +
 				stat_summary(fun.y = mean, geom = "point", size = 3,alpha = 1/3, na.rm = TRUE) +
 				# stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
-										 # size = 1, na.rm = TRUE) +
+				# size = 1, na.rm = TRUE) +
 				geom_smooth(aes(group = criteria), se = FALSE) +
 				scale_colour_manual (values = Colour()) +
 				theme(plot.subtitle = element_text(vjust = 1),
@@ -489,7 +806,7 @@ server <- function(input, output, session) {
 	})
 	
 	
-
+	
 	# Gained Roughness, Plot1:
 	
 	output$roughG_line1_UIO <- renderUI({
@@ -893,7 +1210,7 @@ server <- function(input, output, session) {
 	
 	
 	# Gained Hardness, Plot1:
-
+	
 	output$hardG_line1_UIO <- renderUI({
 		plotOutput("hardG_line1",
 							 height = plotG_sizeTab6()[[4]])
@@ -902,9 +1219,9 @@ server <- function(input, output, session) {
 	output$hardG_line1 <- renderPlot({
 		plotG_hard_line()
 	})
-
+	
 	# Gained Hardness, Plot2:
-
+	
 	output$hardG_line2_UIO <- renderUI({
 		if (is.null(input$AnalCrit) | is.null(input$FacetCrit)) {
 			return(NULL)
@@ -913,7 +1230,7 @@ server <- function(input, output, session) {
 								 height = plotG_sizeTab6()[[length(input$FacetCrit)]])
 		}
 	})
-
+	
 	output$hardG_line2 <- renderPlot({
 		if (is.null(plotG_hard_line()) | is.null(input$FacetCrit)) {
 			return(NULL)
@@ -1287,7 +1604,7 @@ server <- function(input, output, session) {
 				stat_summary(fun.y = mean, geom = "point", 
 										 size = 3,alpha = 1/3, na.rm = TRUE) +
 				stat_summary(fun.y = mean, geom = "line", aes(group = criteria),
-				size = 1, na.rm = TRUE) +
+										 size = 1, na.rm = TRUE) +
 				# geom_smooth(aes(group = criteria), se = FALSE) +
 				scale_colour_manual (values = 
 														 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
@@ -1411,7 +1728,7 @@ server <- function(input, output, session) {
 												 as.numeric(input$PlotGSizeTabFM))),
 					c("px", "px", "px", "px"), sep = "")
 	})
-
+	
 	plotG_flexural_model <- reactive({
 		if (is.null(Mutated())) {
 			return(NULL)
@@ -1425,8 +1742,8 @@ server <- function(input, output, session) {
 				scale_y_continuous("Flexural Strength Gained") +
 				geom_smooth(lwd = 1, se = FALSE) +
 				stat_summary(fun.y = mean, geom = "point", size = 3, na.rm = TRUE) +
-	scale_colour_manual (values =
-											 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
+				scale_colour_manual (values =
+														 	unique(filter(colour, material != "R") [[colour_scheme()]])) +
 				theme(plot.subtitle = element_text(vjust = 1),
 							plot.caption = element_text(vjust = 1),
 							panel.grid.major = element_line(colour = "gray5",
@@ -1437,20 +1754,20 @@ server <- function(input, output, session) {
 							axis.text = element_text(colour = "gray5"))
 		}
 	})
-
+	
 	# Flexural Strength Gained, Model Plot1
-
+	
 	output$flexuralG_model1_UIO <- renderUI({
 		plotOutput("flexuralG_model1",
 							 height = plotG_sizeTabFM()[[4]])
 	})
-
+	
 	output$flexuralG_model1 <- renderPlot({
 		plotG_flexural_model()
 	})
-
+	
 	# Flexural Strength Gained, Model Plot2:
-
+	
 	output$flexuralG_model2_UIO <- renderUI({
 		if (is.null(input$AnalCrit) | is.null(input$FacetCrit)) {
 			return(NULL)
@@ -1459,7 +1776,7 @@ server <- function(input, output, session) {
 								 height = plotG_sizeTabFM()[[length(input$FacetCrit)]])
 		}
 	})
-
+	
 	output$flexuralG_model2 <- renderPlot({
 		if (is.null(plotG_flexural_model()) | is.null(input$FacetCrit)) {
 			return(NULL)
@@ -1473,3 +1790,5 @@ server <- function(input, output, session) {
 	
 	
 }
+
+

@@ -9,7 +9,7 @@ str(got_chars, list.len =6)
 
 library(listviewer)
 jsonedit(got_chars, mode = "view")
-
+str(got_chars[[1]])
 got_chars[[1]][["aliases"]]
 
 # Now I want to find aliases for all lists included, solution: 'purrr: map()'
@@ -44,6 +44,8 @@ collapse2 <- function(x) str_c(x, collapse = " | ")
 collapse1(aliases[[1]])
 collapse2(aliases[[1]])
 map(aliases, collapse1)
+jsonedit(map(aliases, collapse1), mode = "view")
+jsonedit(aliases, mode = "view")
 map(aliases, collapse2)
 
 # 2)

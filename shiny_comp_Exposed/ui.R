@@ -1,7 +1,7 @@
-# plot_size <- c("", "400px", "800px")
+
 ui <- fluidPage(
 	br(),
-	titlePanel("Environmental Effect on Fibre Glass Composites, Exposed Samples, Normalized Data"),
+	titlePanel("Environmental Effect on Fibre Glass Composites, Exposed Samples, Original Data"),
 	fluidRow(
 		br(), br(),
 		column(3,
@@ -39,7 +39,7 @@ ui <- fluidPage(
 					 	),
 					 	tabPanel("Roughness Trends",
 					 					 br(),
-					 					 h2("Exposed Samples, Roughness General Trends:"),
+					 					 h2("EXposed Samples, Roughness General Trends:"),
 					 					 br(),
 					 					 selectInput("PlotSizeTab3", "Heghit of Plots in Pixels:",
 					 					 						choices = seq(100, 1000, 50), selected = 400),
@@ -105,7 +105,7 @@ ui <- fluidPage(
 					 	),
 					 	tabPanel("Hardness Trends",
 					 					 br(),
-					 					 h2("Exposed Samples, Hardness General Trends:"),
+					 					 h2("Exposed Samples, Hardness Average Trends:"),
 					 					 br(),
 					 					 selectInput("PlotSizeTab6", "Heghit of Plots in Pixels:",
 					 					 						choices = seq(100, 1000, 50), selected = 400),
@@ -125,25 +125,25 @@ ui <- fluidPage(
 					 					 br(), br()
 					 	),
 					 	tabPanel("Hardness Model",
-					 						 br(),
-					 						 h2("Exposed Samples, Hardness Model Trends:"),
-					 						 br(),
-					 						 selectInput("PlotSizeTabHM", "Heghit of Plots in Pixels:",
-					 						 						choices = seq(100, 1000, 50), selected = 400),
-					 						 hr(),
-					 						 uiOutput("hard_model1_UIO"),
-					 						 br(), br(),
-					 						 uiOutput("hard_model2_UIO"),
-					 						 br(), br()
-					 						 # h2("Exposed Samples, Hardness Gained:"),
-					 						 # br(),
-					 						 # selectInput("PlotGSizeTabHM", "Heghit of Plots in Pixels:",
-					 						 # 						choices = seq(100, 1000, 50), selected = 400),
-					 						 # hr(),
-					 						 # uiOutput("hardG_model1_UIO"),
-					 						 # br(), br(),
-					 						 # uiOutput("hardG_model2_UIO"),
-					 						 # br(), br()
+					 					 br(),
+					 					 h2("Exposed Samples, Hardness Model Trends:"),
+					 					 br(),
+					 					 selectInput("PlotSizeTabHM", "Heghit of Plots in Pixels:",
+					 					 						choices = seq(100, 1000, 50), selected = 400),
+					 					 hr(),
+					 					 uiOutput("hard_model1_UIO"),
+					 					 br(), br(),
+					 					 uiOutput("hard_model2_UIO"),
+					 					 br(), br()
+					 					 # h2("Exposed Samples, Hardness Gained:"),
+					 					 # br(),
+					 					 # selectInput("PlotGSizeTabHM", "Heghit of Plots in Pixels:",
+					 					 # 						choices = seq(100, 1000, 50), selected = 400),
+					 					 # hr(),
+					 					 # uiOutput("hardG_model1_UIO"),
+					 					 # br(), br(),
+					 					 # uiOutput("hardG_model2_UIO"),
+					 					 # br(), br()
 					 	),
 					 	
 					 	tabPanel("Flexural Scatter Plots",
@@ -201,18 +201,19 @@ ui <- fluidPage(
 					 					 uiOutput("flexural_model1_UIO"),
 					 					 br(), br(),
 					 					 uiOutput("flexural_model2_UIO"),
-					 					 br(), br(),
-					 					 h2("Exposed Samples, Flexural Strength Gained:"),
-					 					 br(),
-					 					 selectInput("PlotGSizeTabFM", "Heghit of Plots in Pixels:",
-					 					 						choices = seq(100, 1000, 50), selected = 400),
-					 					 hr(),
-					 					 uiOutput("flexuralG_model1_UIO"),
-					 					 br(), br(),
-					 					 uiOutput("flexuralG_model2_UIO"),
 					 					 br(), br()
+					 					 # h2("Exposed Samples, Flexural Strength Gained:"),
+					 					 # br(),
+					 					 # selectInput("PlotGSizeTabFM", "Heghit of Plots in Pixels:",
+					 					 # 						choices = seq(100, 1000, 50), selected = 400),
+					 					 # hr(),
+					 					 # uiOutput("flexuralG_model1_UIO"),
+					 					 # br(), br(),
+					 					 # uiOutput("flexuralG_model2_UIO"),
+					 					 # br(), br()
 					 	)
 					 )
 		)
 	)
 )
+

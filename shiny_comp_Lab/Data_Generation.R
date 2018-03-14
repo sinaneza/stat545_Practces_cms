@@ -1,83 +1,69 @@
 rm(list = ls())
-setwd("E:/R_Projects/stat545_Practces_cms/shiny_comp_normal")
+setwd("E:/R_Projects/stat545_Practces_cms/shiny_comp_Lab")
 "E:/R_Projects/stat545_Practces_cms"
 library(shiny)
 library(tidyverse)
 library(stringr)
 library(readxl)
 library(forcats)
-
-# read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/reotherdependencies/3pt_bend_Grp2Lab_Day0.xlsx", 
-# 					 sheet = 2) %>% 
-# 	View
-
-
-exposed0 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
+lab0 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/Lab_SummaryEliminated.xlsx",
 											 sheet = 1)
 
-exposed30 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
+lab30 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/Lab_SummaryEliminated.xlsx",
 												sheet = 2)
 
-exposed90 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
+lab90 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/Lab_SummaryEliminated.xlsx",
 												sheet = 3)
 
-exposed180 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
+lab180 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/Lab_SummaryEliminated.xlsx",
 												 sheet = 4)
 
-exposed270 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
+lab270 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/Lab_SummaryEliminated.xlsx",
 												 sheet = 5)
 
-exposed360 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
+lab360 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/Lab_SummaryEliminated.xlsx",
 												 sheet = 6)
 
-(Exposed_list <- list(exposed0 = exposed0,
-											exposed30 = exposed30,
-											exposed90 = exposed90,
-											exposed180 = exposed180,
-											exposed270 = exposed270,
-											exposed360 = exposed360))
+(lab_list <- list(lab0 = lab0,
+											lab30 = lab30,
+											lab90 = lab90,
+											lab180 = lab180,
+											lab270 = lab270,
+											lab360 = lab360))
 
 
-(Exposed <- bind_rows(bind_rows(Exposed_list$exposed0,
-																Exposed_list$exposed30,
-																Exposed_list$exposed90,
-																Exposed_list$exposed180,
-																Exposed_list$exposed270,
-																Exposed_list$exposed360)) %>% 
+lab_list$lab180
+
+(lab <- bind_rows(bind_rows(lab_list$lab0,
+																lab_list$lab30,
+																lab_list$lab90,
+																lab_list$lab180,
+																lab_list$lab270,
+																lab_list$lab360)) %>% 
 		mutate(Material = as.factor(Material),
-					 Coating = str_replace(Coating, "PR", "NG"),
+					 # Coating = str_replace(Coating, "PR", "NG"),
 					 Coating = as.factor(Coating),
 					 Cure = as.factor(Cure),
 					 crit_3 = str_c(Material, Coating,
 					 							 sep = "_")))
-Exposed$Material
-Exposed$Coating
-Exposed$Cure
+
+lab %>%
+	filter(Material == "R") %>% 
+	View
+
+lab$Material
+lab$Coating
+lab$Cure
 
 Time_tibble <- tibble(Time2 = seq(0,5,1), Time = c(0, 30,
 																									 90, 180,
 																									 270, 360))
 
-Exposed <- inner_join(Exposed, Time_tibble)
-Exposed$Time2
+lab <- inner_join(lab, Time_tibble)
+lab$Time2
 
 
-(Exposed <- Exposed %>% 
-	group_by(Material, Coating, Cure) %>% 
-	mutate(NRoughness = (Roughness - min(Roughness, na.rm = TRUE))/
-				 	(max(Roughness, na.rm = TRUE) - min(Roughness, na.rm = TRUE)),
-				 NHardness = (Hardness - min(Hardness, na.rm = TRUE))/
-				 	(max(Hardness, na.rm = TRUE) - min(Hardness, na.rm = TRUE)),
-				 NMax_Flexural_Stress = (Max_Flexural_Stress - 
-				 													min(Max_Flexural_Stress, na.rm = TRUE))/
-				 	(max(Max_Flexural_Stress, na.rm = TRUE) -
-				 	 	min(Max_Flexural_Stress, na.rm = TRUE)),
-				 Roughness = NRoughness,
-				 Hardness = NHardness,
-				 Max_Flexural_Stress = NMax_Flexural_Stress,
-				 NRoughness = NULL, NHardness = NULL, NMax_Flexural_Stress = NULL
-				 ) %>% 
-		ungroup() %>% 
+(lab <- lab %>% 
 		arrange(Time, Material, Coating, Cure) %>% 
 		group_by(Material, Coating, Cure, Time) %>% 
 		mutate(R_mean = mean (Roughness, na.rm = TRUE),
@@ -88,20 +74,23 @@ Exposed$Time2
 		mutate(GainedR_mean = (R_mean - first(R_mean))/first(R_mean),
 					 GainedH_mean = (H_mean - first(H_mean))/first(H_mean),
 					 GainedF_mean = (F_mean - first(F_mean))/first(F_mean)
-					 ) %>% 
+		) %>% 
 		ungroup()
-	)
+)
 
-Exposed %>%
+lab %>%
+	filter(Material == "C", 
+				 Coating == "GC",
+				 Cure == "FC") %>% 
 	select(Time, Material, Coating, Cure, 
 				 Roughness, R_mean, GainedR_mean,
 				 Hardness, H_mean, GainedH_mean,
 				 Max_Flexural_Stress, F_mean, GainedF_mean) %>% 
 	View()
 
-saveRDS(Exposed, "Exposed.rds")
+saveRDS(lab, "lab.rds")
 
-(Type <- Exposed %>% 
+(Type <- lab %>% 
 		group_by(Material, Coating, Cure) %>% 
 		summarize() %>% 
 		ungroup()) 

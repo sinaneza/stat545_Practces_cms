@@ -1,17 +1,11 @@
 rm(list = ls())
-setwd("E:/R_Projects/stat545_Practces_cms/shiny_comp_normal")
+setwd("E:/R_Projects/stat545_Practces_cms/shiny_comp_Exposed")
 "E:/R_Projects/stat545_Practces_cms"
 library(shiny)
 library(tidyverse)
 library(stringr)
 library(readxl)
 library(forcats)
-
-# read_excel("C:/additional/UBC/MENG_Papers/Bryn/LabGroup/reotherdependencies/3pt_bend_Grp2Lab_Day0.xlsx", 
-# 					 sheet = 2) %>% 
-# 	View
-
-
 exposed0 <- read_excel("C:/additional/UBC/MENG_Papers/Bryn/Generated_Data/Exposed_30.xlsx",
 											 sheet = 1)
 
@@ -63,21 +57,6 @@ Exposed$Time2
 
 
 (Exposed <- Exposed %>% 
-	group_by(Material, Coating, Cure) %>% 
-	mutate(NRoughness = (Roughness - min(Roughness, na.rm = TRUE))/
-				 	(max(Roughness, na.rm = TRUE) - min(Roughness, na.rm = TRUE)),
-				 NHardness = (Hardness - min(Hardness, na.rm = TRUE))/
-				 	(max(Hardness, na.rm = TRUE) - min(Hardness, na.rm = TRUE)),
-				 NMax_Flexural_Stress = (Max_Flexural_Stress - 
-				 													min(Max_Flexural_Stress, na.rm = TRUE))/
-				 	(max(Max_Flexural_Stress, na.rm = TRUE) -
-				 	 	min(Max_Flexural_Stress, na.rm = TRUE)),
-				 Roughness = NRoughness,
-				 Hardness = NHardness,
-				 Max_Flexural_Stress = NMax_Flexural_Stress,
-				 NRoughness = NULL, NHardness = NULL, NMax_Flexural_Stress = NULL
-				 ) %>% 
-		ungroup() %>% 
 		arrange(Time, Material, Coating, Cure) %>% 
 		group_by(Material, Coating, Cure, Time) %>% 
 		mutate(R_mean = mean (Roughness, na.rm = TRUE),
@@ -93,6 +72,9 @@ Exposed$Time2
 	)
 
 Exposed %>%
+	filter(Material == "C", 
+				 Coating == "GC",
+				 Cure == "FC") %>% 
 	select(Time, Material, Coating, Cure, 
 				 Roughness, R_mean, GainedR_mean,
 				 Hardness, H_mean, GainedH_mean,
@@ -152,3 +134,4 @@ names(Type) <- c("material", "coating", "cure")
 (G <- inner_join(colour_Coating_Cure, E))
 (colour <- inner_join(colour_Material_Coating_Cure, G))
 saveRDS(colour, "colour.rds")
+
