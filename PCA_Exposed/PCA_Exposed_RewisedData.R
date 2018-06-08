@@ -1,7 +1,7 @@
 rm(list = ls())
 
 
-setwd("E:/R_Projects/stat545_Practces_cms/PCA")
+setwd("E:/R_Projects/stat545_Practces_cms/PCA_Exposed")
 
 library(tidyverse)
 library(stringr)

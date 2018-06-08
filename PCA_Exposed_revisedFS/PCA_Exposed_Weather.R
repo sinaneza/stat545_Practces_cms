@@ -77,7 +77,7 @@ CureNo <- tibble(Cure = as.factor(c("FC", "PC")),
 	select(c("Time", "precipitation", "mean_temp", "mean_UV", "SnowLevel_cm")) %>% 
 	inner_join(Exposed_new_typequant))
 
-saveRDS(Exposed_Weather,"Exposed_Weather_revisedNAFS.rds")
+# saveRDS(Exposed_Weather,"Exposed_Weather_revisedNAFS.rds")
 
 
 # 1) Including Flexural Strength:
@@ -102,9 +102,9 @@ FS_crit <- FS %>%
 # b) defining filtering criteria:
 
 FS_filtered <- FS_crit %>% 
-	filter(Material == "W",
-				 Coating == "GC",
-				 Cure == "PC") %>%
+	# filter(Material == "W",
+	# 			 Coating == "GC",
+	# 			 Cure == "PC") %>%
 	mutate(Material = fct_drop(Material),
 				 Coating = fct_drop(Coating),
 				 Cure = fct_drop(Cure),
@@ -177,7 +177,7 @@ library(ggfortify)
 					panel.background = element_rect(fill = "gray100"),
 					axis.text = element_text(colour = "gray5")))
 
-# ggsave("C:/additional/UBC/MENG_Papers/PCA/Weather/Whole360Days_FS/AllCategories/W_GC_PC.png", plot_FS, scale = 1)
+# ggsave("C:/additional/UBC/MENG_Papers/PCA/Weather/Whole360Days_FS/AllCategories/Whole.pdf", plot_FS, scale = 1)
 
 
 # 2) Not considering Flexural Strngth (Considering the whole data)

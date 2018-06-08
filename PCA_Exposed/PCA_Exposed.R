@@ -148,7 +148,7 @@ EE <- select(EE0,Time, Roughness, Hardness)
 					panel.background = element_rect(fill = "gray100"),
 					axis.text = element_text(colour = "gray5")))
 
-ggsave("C:/additional/UBC/MENG_Papers/PCA/Material_CoatingCureFacet.png",p, scale = 2)
+# ggsave("C:/additional/UBC/MENG_Papers/PCA/Material_CoatingCureFacet.png",p, scale = 2)
 
 p_d <- select(p$data, PC1, PC2, Time, Roughness,Hardness,
 			 Material, Coating, Cure, criteria) 

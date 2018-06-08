@@ -54,7 +54,11 @@ Mutate_VarCollapse_facet <- function(data, collapsing_vars, ...){
 
 
 
-(Exposed_new_complete <- readRDS("Exposed_RewisedNAs.rds"))
+(Exposed_new_complete <- readRDS("Exposed_RevisedFSNA_2.rds"))
+
+# Exposed_new_complete %>% 
+# 	View
+
 
 MaterialNo <- tibble(Material = as.factor(c("W", "R", "C")),
 												 Material_No = c(1,3,2))
@@ -84,13 +88,15 @@ Exposed_new_typequant <- inner_join(Exposed_new_complete, MaterialNo) %>%
 	Mutate_VarCollapse_criteria(collapsing_vars = AnalCrit) 
 	# Mutate_VarCollapse_facet(collapsing_vars = FacetCrit)
 
-(Exposed_new_pca <- Exposed_new_typequant %>% 
+(Exposed_new_pca <- Exposed_new_typequant %>%
+		filter(Material != "R") %>% 
 	select(Time, Material_No,Coating_No, Cure_No,
 				 Roughness, Hardness, Max_Flexural_Stress, SG) %>% 
 	rename(Material = Material_No,
 				 Coating = Coating_No,
-				 Cure = Cure_No) %>% 
-	filter(!is.na(Max_Flexural_Stress)) %>% 
+				 Cure = Cure_No) %>%
+		rename(Flexural = Max_Flexural_Stress) %>% 
+	# filter(!is.na(Max_Flexural_Stress)) %>%
 	prcomp(center = TRUE ,scale = TRUE, retx = TRUE))
 
 max(Exposed_new_pca$rotation["Coating",])
@@ -118,8 +124,8 @@ library(ggfortify)
 				panel.background = element_rect(fill = "gray100"),
 				axis.text = element_text(colour = "gray5")))
 
-# ggsave("C:/additional/UBC/MENG_Papers/PCA/With_Flexural/Material_Coating_Cure2.png",p, scale = 1)
-
+# ggsave("C:/additional/UBC/MENG_Papers/PCA/With_Flexural/Material_Coating_Cure_360.png",p, scale = 1)
+# 
 # Eliminating Flexural Strength
 
 
