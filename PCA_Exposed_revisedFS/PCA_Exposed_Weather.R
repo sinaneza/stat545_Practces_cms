@@ -70,11 +70,12 @@ CureNo <- tibble(Cure = as.factor(c("FC", "PC")),
 	inner_join(CoatingNo) %>% 
 	inner_join(CureNo))
 
-(Weather_UBCO_UV <- readRDS("Weather_UBCO_UV.rds"))
+(Weather_UBCO_UVRH <- readRDS("Weather_UBCO_UVRH.rds"))
 
 
-(Exposed_Weather <- Weather_UBCO_UV %>% 
-	select(c("Time", "precipitation", "mean_temp", "mean_UV", "SnowLevel_cm")) %>% 
+(Exposed_Weather <- Weather_UBCO_UVRH %>% 
+	select(c("Time", "precipitation","SnowLevel_cm",
+					 "mean_temp", "mean_UV","mean_RH")) %>% 
 	inner_join(Exposed_new_typequant))
 
 # saveRDS(Exposed_Weather,"Exposed_Weather_revisedNAFS.rds")
@@ -102,6 +103,7 @@ FS_crit <- FS %>%
 # b) defining filtering criteria:
 
 FS_filtered <- FS_crit %>% 
+	filter(Material == "W") %>% 
 	# filter(Material == "W",
 	# 			 Coating == "GC",
 	# 			 Cure == "PC") %>%
@@ -267,6 +269,6 @@ library(ggfortify)
 					panel.background = element_rect(fill = "gray100"),
 					axis.text = element_text(colour = "gray5")))
 
-ggsave("C:/additional/UBC/MENG_Papers/PCA/Weather/Whole360Days/Materialwise/R.png", plot_360, scale = 1)
+# ggsave("C:/additional/UBC/MENG_Papers/PCA/Weather/Whole360Days/Materialwise/R.png", plot_360, scale = 1)
 
 

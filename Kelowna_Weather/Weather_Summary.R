@@ -13,6 +13,8 @@ library(readxl)
 (UBCO_2014 <- read_excel("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/UBCO_2014.xlsx"))
 (UBCO_2015 <- read_excel("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/UBCO_2015.xlsx"))
 (UV <- read_excel("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/UV_WeatherCom.xlsx"))
+(RH <- read_excel("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/RH_WeatherstatsCa.xlsx"))
+
 names(UBCO_2015) <- names(UBCO_2014)
 names(B) <- names(A)
 
@@ -37,6 +39,9 @@ UBCO_2014 %>%
 (Weather_UBCO_Time0 <- tibble(Time = 0, month = "Jan", precipitation = 0,
 												 mean_temp = -7.5, min_temp =-9.5, max_temp = -5.4, SnowLevel_cm = 0))
 
+# (Weather_UBCO_Time0 <- tibble(Time = 0, month = "Jan", precipitation = 0,
+# 															mean_temp = 21, min_temp = 21, max_temp = 21, SnowLevel_cm = 0))
+
 (Weather_UBCO_1 <- UBCO %>% 
 		group_by(Time_char) %>%
 		summarize(precipitation = sum(Total_Precip_mm, na.rm = TRUE),
@@ -53,22 +58,29 @@ UBCO %>%
 	filter(270<=Time & Time <360) %>% 
 	with(sum(Total_Precip_mm, na.rm =TRUE))
 
+UBCO %>%
+	filter(Time>=90 & Time<180) %>% 
+	with(sum(Total_Precip_mm,na.rm = TRUE))
+
 (Weather_UBCO <- bind_rows(Weather_UBCO_Time0, Weather_UBCO_1))
 
 (Weather_UV <- UV %>%
 		group_by(Time) %>% 
 		summarize(mean_UV = mean(Mean_UV_Index)))
 
-(Weather_UBCO_UV <- inner_join(Weather_UBCO, Weather_UV))
-saveRDS(Weather_UBCO_UV, "Weather_UBCO_UV.rds")
-write_csv(Weather_UBCO_UV, "C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Weather_UBCO_UV.csv")
-UBCO %>%
-	filter(Time>=90 & Time<180) %>% 
-	with(sum(Total_Precip_mm,na.rm = TRUE))
+(Weather_UV_RH <- RH %>% 
+		group_by(Time) %>%
+		summarize(mean_RH = mean(RH_HourlyMean)) %>% 
+	inner_join(Weather_UV))
 
-(UV_plot <- Weather_UBCO_UV %>% 
+(Weather_UBCO_UVRH <- inner_join(Weather_UBCO, Weather_UV_RH))
+saveRDS(Weather_UBCO_UVRH, "Weather_UBCO_UVRH.rds")
+write_csv(Weather_UBCO_UVRH, "C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Weather_UBCO_UVRH.csv")
+
+# 1) UV Variations by Passage of Time:
+(UV_plot <- Weather_UBCO_UVRH %>% 
 	ggplot(aes(x = Time, y= mean_UV)) + 
-		scale_x_continuous("Days", breaks = c(0,90,180,270,360)) +
+		scale_x_continuous("Time (days)", breaks = c(0,90,180,270,360)) +
 	geom_point(size =3) + 
 	labs(x = "Days", y = "Average UV Index") +
 	geom_smooth(data = UV, aes(x = Time, y = Mean_UV_Index, group = 1),
@@ -85,13 +97,33 @@ UBCO %>%
 				axis.text = element_text(colour = "gray5")))
 
 
-ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/UV.png", UV_plot, scale = 1)
+# ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/UV.png", UV_plot, scale = 1)
 
+# 2) Variations in Relative Humidity by Passage of Time:
+(RH_plot <- Weather_UBCO_UVRH %>% 
+		ggplot(aes(x = Time, y= mean_RH)) + 
+		scale_x_continuous("Time (days)", breaks = c(0,90,180,270,360)) +
+		geom_point(size =3) + 
+		labs(x = "Days", y = "RH%") +
+		geom_smooth(data = RH, aes(x = Time, y = RH_HourlyMean, group = 1),
+								se = FALSE,
+								colour = "blue",
+								linetype="longdash") +
+		theme(plot.subtitle = element_text(vjust = 1),
+					plot.caption = element_text(vjust = 1),
+					panel.grid.major = element_line(colour = "gray5",
+																					linetype = "longdash"),
+					panel.grid.minor = element_line(colour = "gray5",
+																					linetype = "dotdash"),
+					panel.background = element_rect(fill = "gray100"),
+					axis.text = element_text(colour = "gray5")))
 
-(precipitation_plot <- Weather_UBCO_UV %>% 
+# ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/RH.png", RH_plot, scale = 1)
+
+(precipitation_plot <- Weather_UBCO_UVRH %>% 
 	ggplot(aes(x= Time, y = precipitation)) +
-	scale_x_continuous("Days", breaks = c(0, 90, 180, 270, 360)) +
-	labs( y = "Precipitation in mm") +
+	scale_x_continuous("Time (days)", breaks = c(0, 90, 180, 270, 360)) +
+	labs( y = "Precipitation (mm)") +
 	geom_point(size = 3) +
 	geom_smooth(se = FALSE, linetype = "longdash") +
 	theme(plot.subtitle = element_text(vjust = 1),
@@ -103,12 +135,12 @@ ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/UV.png", UV_plot, sca
 				panel.background = element_rect(fill = "gray100"),
 				axis.text = element_text(colour = "gray5")))
 
-ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Precipitation.png", precipitation_plot, scale = 1)
+# ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Precipitation.png", precipitation_plot, scale = 1)
 
-(Temp_plot <- Weather_UBCO_UV %>% 
+(Temp_plot <- Weather_UBCO_UVRH %>% 
 		ggplot(aes(x= Time, y = mean_temp)) +
-		scale_x_continuous("Days", breaks = c(0, 90, 180, 270, 360)) +
-		labs( y = "Temperature in C") +
+		scale_x_continuous("Time (days)", breaks = c(0, 90, 180, 270, 360)) +
+		labs( y = "Temperature (C)") +
 		geom_point(size = 3) +
 		geom_smooth(se = FALSE, linetype = "longdash") +
 		theme(plot.subtitle = element_text(vjust = 1),
@@ -121,12 +153,12 @@ ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Precipitation.png", p
 					axis.text = element_text(colour = "gray5")))
 
 
-ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Temperature.png", Temp_plot, scale = 1)
-
-(Snow_plot <- Weather_UBCO_UV %>% 
+# ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Temperature.png", Temp_plot, scale = 1)
+# Snow_on_Grnd_cm
+(Snow_plot <- Weather_UBCO_UVRH %>% 
 		ggplot(aes(x= Time, y = SnowLevel_cm)) +
-		scale_x_continuous("Days", breaks = c(0, 90, 180, 270, 360)) +
-		labs( y = "Snow Level in cm") +
+		scale_x_continuous("Time (days)", breaks = c(0, 90, 180, 270, 360)) +
+		labs( y = "Snow Level (cm)") +
 		geom_point(size = 3) +
 		geom_smooth(se = FALSE, linetype = "longdash") +
 		theme(plot.subtitle = element_text(vjust = 1),
@@ -138,7 +170,7 @@ ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Temperature.png", Tem
 					panel.background = element_rect(fill = "gray100"),
 					axis.text = element_text(colour = "gray5")))
 
-ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Snow.png", Snow_plot, scale = 1)
+# ggsave("C:/additional/UBC/MENG_Papers/Weather_Kelowna/UBCO/Snow.png", Snow_plot, scale = 1)
 
 # Different Weather Station Data
 A_B <- bind_rows(A,B) %>% 
